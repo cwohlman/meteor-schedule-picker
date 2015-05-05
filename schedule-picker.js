@@ -70,6 +70,37 @@ Template.schedulePicker.defaultOptions = {
                 }
               }
             }
+            , twice: {
+              name: 'Twice'
+              , default: 'twice'
+              , options: {
+                twice: {
+                  name: 'Twice Daily (BID)'
+                  , schedule: [timesOfDay.morning, timesOfDay.late]
+                }
+                , morningAndBedtime: {
+                  name: 'Morning and Bedtime (AM&HS)'
+                  , schedule: ["7:00 am", timesOfDay.bedtime]
+                }
+                , twiceBeforeMeals: {
+                  name: 'Twice Daily before Meals (BIDAC)'
+                  , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeSupper]
+                }
+                , twiceAfterMeals: {
+                  name: 'Twice Daily after Meals (BIDPC)'
+                  , schedule: [timesOfDay.afterBreakfast, timesOfDay.afterSupper]
+                }
+                , twiceMeals: {
+                  name: 'Twice Daily with Meals (BIDWM)'
+                  , schedule: [timesOfDay.breakfast, timesOfDay.supper]
+                }
+                , twiceInsulin: {
+                  name: 'Twice Daily for Insulin'
+                  , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeSupper]
+                }
+
+              }
+            }
           }
         }
         , weekly: {
