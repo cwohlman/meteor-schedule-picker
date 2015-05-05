@@ -16,7 +16,9 @@
 
     this.When(/^I navigate to "([^"]*)"$/, function (relativePath, callback) {
       // WebdriverIO supports Promises/A+ out the box, so you can return that too
-      this.browser. // this.browser is a pre-configured WebdriverIO + PhantomJS instance
+      this.browser.
+        end().
+        init().
         url(url.resolve(process.env.HOST, relativePath)). // process.env.HOST always points to the mirror
         call(callback);
     });
