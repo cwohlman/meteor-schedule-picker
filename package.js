@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'cwohlman:meteor-schedule-dropdown',
+  name: 'cwohlman:schedule-picker',
   version: '0.0.1',
   // Brief, one-line summary of the package.
   summary: '',
@@ -12,11 +12,20 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
-  api.addFiles('meteor-schedule-dropdown.js');
+
+  api.use([
+      'underscore'
+      , 'templating'
+    ]);
+
+  api.addFiles([
+      'schedule-picker.html'
+      , 'schedule-picker.js'
+    ], 'client');
 });
 
 Package.onTest(function(api) {
   api.use('tinytest');
-  api.use('cwohlman:meteor-schedule-dropdown');
-  api.addFiles('meteor-schedule-dropdown-tests.js');
+  api.use('cwohlman:schedule-picker');
+  api.addFiles('schedule-picker-tests.js');
 });
