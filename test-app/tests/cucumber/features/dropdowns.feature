@@ -15,19 +15,25 @@ Feature: A user should see schedule dropdowns
     Given I navigate to "/"
     When I select "schedule" option of the "scheduleKind" dropdown
     Then I should see a dropdown "scheduleFrequency" with the following options:
-      | name   | value  |
-      | Daily  | daily  |
-      | Hourly | hourly |
+      | name    | value   |
+      | Hourly  | hourly  |
+      | Daily   | daily   |
+      | Weekly  | weekly  |
+      | Monthly | monthly |
 
   Scenario: Schedule Frequency dropdown (asneeded)
     Given I navigate to "/"
     When I select "asneeded" option of the "scheduleKind" dropdown
     Then I should see a dropdown "scheduleFrequency" with the following options:
-      | name   | value  |
-      | Daily  | daily  |
-      | Hourly | hourly |
+      | name    | value   |
+      | Hourly  | hourly  |
+      | Daily   | daily   |
+      | Weekly  | weekly  |
+      | Monthly | monthly |
 
   Scenario: Schedule Frequency dropdown (onetime)
     Given I navigate to "/"
     When I select "onetime" option of the "scheduleKind" dropdown
     Then I should not see a dropdown "scheduleFrequency"
+
+# Feature: A user should see time dropdowns
