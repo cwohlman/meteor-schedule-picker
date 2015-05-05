@@ -6,6 +6,7 @@ var timesOfDay = Template.schedulePicker.timesOfDay = {
   , lunch: '12:00 pm'
   , beforeLunch: '11:30 am'
   , afterLunch: '12:30 pm'
+  , afternoon: '4:00 pm'
   , supper: '8:00 pm'
   , beforeSupper: '7:30 pm'
   , afterSupper: '8:30 pm'
@@ -99,6 +100,28 @@ Template.schedulePicker.defaultOptions = {
                   , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeSupper]
                 }
 
+              }
+            }
+            , three: {
+              name: 'Three'
+              , default: 'three'
+              , options: {
+                three: {
+                  name: 'Three Times per Day (TID)'
+                  , schedule: [timesOfDay.morning, timesOfDay.afternoon, timesOfDay.late]
+                }
+                , beforeMeals: {
+                  name: 'Before Meals'
+                  , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeLunch, timesOfDay.beforeSupper]
+                }
+                , afterMeals: {
+                  name: 'After Meals'
+                  , schedule: [timesOfDay.afterBreakfast, timesOfDay.afterLunch, timesOfDay.afterSupper]
+                }
+                , withMeals: {
+                  name: 'With Meals'
+                  , schedule: [timesOfDay.breakfast, timesOfDay.lunch, timesOfDay.supper]
+                }
               }
             }
           }

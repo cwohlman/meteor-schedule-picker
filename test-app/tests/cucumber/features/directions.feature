@@ -27,3 +27,7 @@ Feature: I should be able to select any kind of medical frequency
       | Daily     | Twice      | Twice Daily after Meals (BIDPC)    | 8:30 am,8:30 pm            |
       | Daily     | Twice      | Twice Daily with Meals (BIDWM)     | 8:00 am,8:00 pm            |
       | Daily     | Twice      | Twice Daily for Insulin            | 7:30 am,7:30 pm            |
+      | Daily     | Three      | Three Times per Day (TID)          | 10:00 am,4:00 pm,10:00 pm  |
+      | Daily     | Three      | With Meals                         | 8:00 am,12:00 pm,8:00 pm   |
+      | Daily     | Three      | After Meals                        | 8:30 am,12:30 pm,8:30 pm   |
+      | Daily     | Three      | Before Meals                       | 7:30 am,11:30 am,7:30 pm   |
