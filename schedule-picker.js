@@ -11,7 +11,7 @@ var timesOfDay = Template.schedulePicker.timesOfDay = {
   , afterSupper: '8:30 pm'
   , evening: '9:00 pm'
   , late: '10:00 pm'
-  , bedtime: '11:00pm'
+  , bedtime: '11:00 pm'
 };
 
 Template.schedulePicker.defaultOptions = {
@@ -45,7 +45,7 @@ Template.schedulePicker.defaultOptions = {
                   , schedule: timesOfDay.breakfast
                 }
                 , beforeBreakfast: {
-                  name: '30 minutes before Breakfast (30BR)'
+                  name: '30 Minutes before Breakfast (30BR)'
                   , schedule: timesOfDay.beforeBreakfast
                 }
                 , supper: {
@@ -86,7 +86,7 @@ Template.schedulePicker.defaultOptions = {
   }
 };
 
-var partNames = ['scheduleKind', 'scheduleFrequency'];
+var partNames = ['scheduleKind', 'scheduleFrequency', 'scheduleRecurrence', 'scheduleTimes'];
 
 Template.schedulePicker.defaultOptions.options.asneeded = _.defaults({
   name: 'As Needed (PRN)'
@@ -137,5 +137,22 @@ Template.schedulePicker.helpers({
   }
   , isSelected: function (a, b) {
     return a === b;
+  }
+  , schedule: function () {
+    var tmpl = Template.instance();
+    var selection = tmpl.dict.get('value');
+    var options = Template.schedulePicker.defaultOptions;
+    var results = [];
+    var parentParts = [];
+    selection = selection || [];
+
+    var part;
+    while (options && options.options) {
+      part = selection.shift() || options.default || null;
+      options = part && options.options[part];
+      parentParts.push(part);
+    }
+
+    return options.schedule;
   }
 });

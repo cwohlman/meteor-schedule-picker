@@ -70,6 +70,19 @@
         and.notify(callback)
         ;
     });
+
+    this.Given(/^I select these options:$/, function (table, callback) {
+      var self = this;
+      Promise.all(_.map(table.hashes(), function (a, i) {
+        return self.browser.selectByVisibleText('[data-option-index="' + i + '"]', a.option);
+      })).nodeify(callback);
+    });
+
+    this.Then(/^I should see the date (.*)$/, function (value, callback) {
+      console.log(value);
+      this.browser.waitForVisible('p').getText('p').should.become(value).and.notify(callback);
+      // return callback.pending();
+    });
   };
 
 })();
