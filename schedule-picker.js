@@ -124,6 +124,36 @@ Template.schedulePicker.defaultOptions = {
                 }
               }
             }
+            , four: {
+              name: 'Four'
+              , default: 'four'
+              , options: {
+                four: {
+                  name: 'Four Times per Day (QID)'
+                  , schedule: [timesOfDay.morning, "2:00 pm", "6:00 pm", timesOfDay.late]
+                }
+                , withMealsAndBedtime: {
+                  name: 'With Meals and Bedtime (WM&HS)'
+                  , schedule: [timesOfDay.breakfast, timesOfDay.lunch, timesOfDay.supper, timesOfDay.bedtime]
+                }
+                , minutes15BeforeMealsAndBedtime: {
+                  name: '15 Minutes before Meals and Bedtime'
+                  , schedule: ["7:45 am", "11:45 am", "7:45 pm", "11:00 pm"]
+                }
+                , minutes30BeforeMealsAndBedtime: {
+                  name: '30 Minutes before Meals and Bedtime'
+                  , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeLunch, timesOfDay.beforeSupper, timesOfDay.bedtime]
+                }
+                , beforeMealsAndBedtime: {
+                  name: 'Before Meals and Bedtime (AC&HS)'
+                  , schedule: [timesOfDay.beforeBreakfast, timesOfDay.beforeLunch, timesOfDay.beforeSupper, timesOfDay.bedtime]
+                }
+                , afterMealsAndBedtime: {
+                  name: 'After Meals and Bedtime (PCS&HS)'
+                  , schedule: [timesOfDay.afterBreakfast, timesOfDay.afterLunch, timesOfDay.afterSupper, timesOfDay.bedtime]
+                }
+              }
+            }
           }
         }
         , weekly: {
