@@ -154,6 +154,16 @@ Template.schedulePicker.defaultOptions = {
                 }
               }
             }
+            , five: {
+              name: 'Five'
+              , default: 'five'
+              , options: {
+                five: {
+                  name: 'Five Times per Day (FIVE)'
+                  , schedule: ['6:00 am', '10:00 am', '2:00 pm', '6:00 pm', '10:00 pm']
+                }
+              }
+            }
           }
         }
         , weekly: {
