@@ -57,6 +57,17 @@
         and.notify(callback)
         ;
     });
+
+    this.Then(/^The selected option of "([^"]*)" should be "([^"]*)"$/, function (dropdownName, expectedValue, callback) {
+      var selector = 'select[name="' + dropdownName + '"]';
+
+      this.browser.
+        waitForVisible('select').
+        getValue(selector).
+        should.become(expectedValue).
+        and.notify(callback)
+        ;
+    });
   };
 
 })();
