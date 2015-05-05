@@ -16,6 +16,7 @@ Package.onUse(function(api) {
   api.use([
       'underscore'
       , 'templating'
+      , 'reactive-dict'
     ]);
 
   api.addFiles([

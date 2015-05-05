@@ -4,4 +4,10 @@
     <option value="asneeded">As Needed (PRN)</option>
     <option value="onetime">One Time (ONE)</option>
   </select>
+  {{#if showFrequency}}
+    <select name="scheduleFrequency">
+      <option value="daily">Daily</option>
+      <option value="hourly">Hourly</option>
+    </select>
+  {{/if}}
 </template>

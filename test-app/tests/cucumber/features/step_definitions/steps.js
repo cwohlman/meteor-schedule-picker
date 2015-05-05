@@ -30,12 +30,32 @@
 
     this.Then(/^I should see a dropdown "([^"]*)" with the following options:$/, function (dropdownName, table, callback) {
 
-      var items = table.hashes();
+      var expectedOptions = table.hashes();
       var selector = 'select[name="' + dropdownName + '"]';
       var self = this;
-      Promise.all(_.map(items, function (item) {
+      Promise.all(_.map(expectedOptions, function (item) {
         return self.browser.getText(selector + ' option[value="' + item.value + '"]').should.become(item.name);
       })).nodeify(callback);
+    });
+
+    this.When(/^I select "([^"]*)" option of the "([^"]*)" dropdown$/, function (optionValue, dropdownName, callback) {
+      var selector = 'select[name="' + dropdownName + '"]';
+
+      this.browser.
+        waitForVisible(selector).
+        selectByValue(selector, optionValue).
+        call(callback);
+    });
+
+    this.Then(/^I should not see a dropdown "([^"]*)"$/, function (dropdownName, callback) {
+      var selector = 'select[name="' + dropdownName + '"]';
+
+      this.browser.
+        waitForVisible('select').
+        isExisting(selector).
+        should.become(false).
+        and.notify(callback)
+        ;
     });
   };
 
