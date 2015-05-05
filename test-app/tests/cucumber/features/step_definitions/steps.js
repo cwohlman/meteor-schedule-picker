@@ -78,10 +78,9 @@
       })).nodeify(callback);
     });
 
-    this.Then(/^I should see the date (.*)$/, function (value, callback) {
+    this.Then(/^I should see the time (.*)$/, function (value, callback) {
       console.log(value);
-      this.browser.waitForVisible('p').getText('p').should.become(value).and.notify(callback);
-      // return callback.pending();
+      this.browser.waitForVisible('p').getText('.schedule-time').should.become(value).and.notify(callback);
     });
   };
 

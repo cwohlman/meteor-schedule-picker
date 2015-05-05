@@ -8,7 +8,7 @@ Feature: I should be able to select any kind of medical frequency
       | Daily           |
       | Once            |
       | <option>        |
-    Then I should see the date <value>
+    Then I should see the time <value>
 
     Examples:
       | option                              | value    |
