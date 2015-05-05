@@ -1,15 +1,11 @@
 <template name="schedulePicker">
-  <select name="scheduleKind">
-    <option value="schedule">Recurrent (SCH)</option>
-    <option value="asneeded">As Needed (PRN)</option>
-    <option value="onetime">One Time (ONE)</option>
-  </select>
-  {{#if showFrequency}}
-    <select name="scheduleFrequency">
-      <option value="hourly">Hourly</option>
-      <option value="daily" selected="selected">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
+  {{#each parts}}
+    <select name="{{partName}}">
+      {{#each options}}
+        <option value="{{value}}" selected="{{isSelected value ../value}}">
+          {{name}}
+        </option>
+      {{/each}}
     </select>
-  {{/if}}
+  {{/each}}
 </template>

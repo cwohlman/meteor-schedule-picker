@@ -34,7 +34,9 @@
       var selector = 'select[name="' + dropdownName + '"]';
       var self = this;
       Promise.all(_.map(expectedOptions, function (item) {
-        return self.browser.getText(selector + ' option[value="' + item.value + '"]').should.become(item.name);
+        return self.browser.getText(selector + ' option[value="' + item.value + '"]').then(function (a) {
+          return a.trim();
+        }).should.become(item.name);
       })).nodeify(callback);
     });
 
