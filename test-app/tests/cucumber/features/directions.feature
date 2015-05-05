@@ -21,4 +21,3 @@ Feature: I should be able to select any kind of medical frequency
       | 30 Minutes after Supper (PSUP)      | 8:30 pm  |
       | Evening (PM)                        | 9:00 pm  |
       | Bedtime (HS)                        | 11:00 pm |
-

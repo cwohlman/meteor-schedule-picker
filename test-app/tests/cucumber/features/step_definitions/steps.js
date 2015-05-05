@@ -79,7 +79,6 @@
     });
 
     this.Then(/^I should see the time (.*)$/, function (value, callback) {
-      console.log(value);
       this.browser.waitForVisible('p').getText('.schedule-time').should.become(value).and.notify(callback);
     });
   };
