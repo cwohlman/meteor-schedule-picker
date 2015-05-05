@@ -6,6 +6,8 @@
 
     // You can use normal require here, cucumber is NOT run in a Meteor context (by design)
     var url = require('url');
+    var Promise = require('q');
+    var _ = require('underscore');
 
     this.Given(/^I am a new user$/, function () {
       // no callbacks! DDP has been promisified so you can just return it
@@ -26,6 +28,15 @@
         getTitle().should.become(expectedTitle).and.notify(callback);
     });
 
+    this.Then(/^I should see a dropdown "([^"]*)" with the following options:$/, function (dropdownName, table, callback) {
+
+      var items = table.hashes();
+      var selector = 'select[name="' + dropdownName + '"]';
+      var self = this;
+      Promise.all(_.map(items, function (item) {
+        return self.browser.getText(selector + ' option[value="' + item.value + '"]').should.become(item.name);
+      })).nodeify(callback);
+    });
   };
 
 })();
