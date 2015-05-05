@@ -24,6 +24,25 @@ Template.schedulePicker.defaultOptions = {
       , options: {
         hourly: {
           name: 'Hourly'
+          , default: 'every4Hours'
+          , options: {
+            every4Hours: {
+              name: 'Every 4 Hours (Q4H)'
+              , schedule: ["6:00 am", "10:00 am", "2:00 pm", "6:00 pm", "10:00 pm", "2:00 am"]
+            }
+            , every6Hours: {
+              name: 'Every 6 Hours (Q4H)'
+              , schedule: ["6:00 am", "12:00 pm", "6:00 pm", "12:00 am"]
+            }
+            , every8Hours: {
+              name: 'Every 8 Hours (Q4H)'
+              , schedule: ["6:00 am", "2:00 pm", "10:00 pm"]
+            }
+            , every12Hours: {
+              name: 'Every 12 Hours (Q4H)'
+              , schedule: ["10:00 am", "10:00 pm"]
+            }
+          }
         }
         , daily: {
           name: 'Daily'

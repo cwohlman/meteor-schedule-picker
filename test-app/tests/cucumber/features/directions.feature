@@ -38,3 +38,20 @@ Feature: I should be able to select any kind of medical frequency
       | Daily     | Four       | Before Meals and Bedtime (AC&HS)    | 7:30 am,11:30 am,7:30 pm,11:00 pm         |
       | Daily     | Four       | After Meals and Bedtime (PCS&HS)    | 8:30 am,12:30 pm,8:30 pm,11:00 pm         |
       | Daily     | Five       | Five Times per Day (FIVE)           | 6:00 am,10:00 am,2:00 pm,6:00 pm,10:00 pm |
+
+  Scenario Outline:
+    Given I navigate to "/"
+    And I select these options:
+      | option          |
+      | Recurrent (SCH) |
+      | <frequency>     |
+      | <time>          |
+    Then I should see the time <value>
+
+    Examples:
+      | frequency | time                                | value                                             |
+      | Hourly    | Every 4 Hours (Q4H)                 | 6:00 am,10:00 am,2:00 pm,6:00 pm,10:00 pm,2:00 am |
+      | Hourly    | Every 6 Hours (Q4H)                 | 6:00 am,12:00 pm,6:00 pm,12:00 am                 |
+      | Hourly    | Every 8 Hours (Q4H)                 | 6:00 am,2:00 pm,10:00 pm                          |
+      | Hourly    | Every 12 Hours (Q4H)                | 10:00 am,10:00 pm                                 |
+
