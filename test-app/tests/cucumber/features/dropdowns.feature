@@ -39,6 +39,4 @@ Feature: A user should see schedule dropdowns
   Scenario: Daily should be the default option for the frequency dropdown
     Given I navigate to "/"
     When I select "schedule" option of the "scheduleKind" dropdown
-    Then The selected option of "scheduleFrequency" should be "daily"  
-
-# Feature: A user should see time dropdowns
+    Then The selected option of "scheduleFrequency" should be "daily"
