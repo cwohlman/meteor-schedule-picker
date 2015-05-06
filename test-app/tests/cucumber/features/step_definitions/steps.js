@@ -33,7 +33,7 @@
     this.Then(/^I should see a dropdown "([^"]*)" with the following options:$/, function (dropdownName, table, callback) {
 
       var expectedOptions = table.hashes();
-      var selector = 'select[name="' + dropdownName + '"]';
+      var selector = 'select[name="schedule.' + dropdownName + '"]';
       var self = this;
       Promise.all(_.map(expectedOptions, function (item) {
         return self.browser.getText(selector + ' option[value="' + item.value + '"]').then(function (a) {
@@ -43,7 +43,7 @@
     });
 
     this.When(/^I select "([^"]*)" option of the "([^"]*)" dropdown$/, function (optionValue, dropdownName, callback) {
-      var selector = 'select[name="' + dropdownName + '"]';
+      var selector = 'select[name="schedule.' + dropdownName + '"]';
 
       this.browser.
         waitForVisible(selector).
@@ -52,7 +52,7 @@
     });
 
     this.Then(/^I should not see a dropdown "([^"]*)"$/, function (dropdownName, callback) {
-      var selector = 'select[name="' + dropdownName + '"]';
+      var selector = 'select[name="schedule.' + dropdownName + '"]';
 
       this.browser.
         waitForVisible('select').
@@ -63,7 +63,7 @@
     });
 
     this.Then(/^The selected option of "([^"]*)" should be "([^"]*)"$/, function (dropdownName, expectedValue, callback) {
-      var selector = 'select[name="' + dropdownName + '"]';
+      var selector = 'select[name="schedule.' + dropdownName + '"]';
 
       this.browser.
         waitForVisible('select').
@@ -89,7 +89,7 @@
     });
 
     this.Then(/^I should see the schedule (.*)$/, function (value, callback) {
-      this.browser.waitForVisible('h1').getValue('[name="schedule"]').should.become(value).and.notify(callback);
+      this.browser.waitForVisible('h1').getValue('[name="schedule.value"]').should.become(value).and.notify(callback);
     });
   };
 
