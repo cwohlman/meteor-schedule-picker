@@ -18,7 +18,10 @@ var timesOfDay = Template.schedulePicker.timesOfDay = {
 Template.schedulePicker.defaultOptions = {
   default: 'schedule'
   , options: {
-    schedule: {
+    onetime: {
+      name: 'One Time (ONE)'
+    }
+    , schedule: {
       name: 'Recurrent (SCH)'
       , default: 'daily'
       , options: {
@@ -192,9 +195,6 @@ Template.schedulePicker.defaultOptions = {
           name: 'Monthly'
         }
       }
-    }
-    , onetime: {
-      name: 'One Time (ONE)'
     }
   }
 };
