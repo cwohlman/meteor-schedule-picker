@@ -87,6 +87,10 @@
     this.Then(/^I should see the date "([^"]*)"$/, function (value, callback) {
       this.browser.waitForVisible('p').getText('.next-date').should.become(value).and.notify(callback);
     });
+
+    this.Then(/^I should see the schedule (.*)$/, function (value, callback) {
+      this.browser.waitForVisible('h1').getValue('[name="schedule"]').should.become(value).and.notify(callback);
+    });
   };
 
 })();

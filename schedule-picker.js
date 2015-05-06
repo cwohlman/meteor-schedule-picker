@@ -253,6 +253,28 @@ Template.schedulePicker.helpers({
   }
   , schedule: function () {
     var tmpl = Template.instance();
+    var startDate = this.startDate;
+    var selection = tmpl.dict.get('value');
+    var options = Template.schedulePicker.defaultOptions;
+    var results = [];
+    var parentParts = [];
+    selection = selection || [];
+
+    var part;
+    while (options && options.options) {
+      part = selection.shift() || options.default || null;
+      options = part && options.options[part];
+      parentParts.push(part);
+    }
+
+    var schedule = later.parse.text(_.map([].concat(options.schedule), function (a) {
+      return "at " + a;
+    }).join(' also '));
+
+    return JSON.stringify(schedule);
+  }
+  , scheduleTimes: function () {
+    var tmpl = Template.instance();
     var selection = tmpl.dict.get('value');
     var options = Template.schedulePicker.defaultOptions;
     var results = [];

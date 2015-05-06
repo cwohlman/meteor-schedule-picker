@@ -1,6 +1,6 @@
 Feature: The schedule picker should display the next date
 
-  Scenario Outline: Twice daily
+  Scenario Outline:
     Given I navigate to "/"
     When I select these options:
       | option            |
