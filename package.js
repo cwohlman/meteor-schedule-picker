@@ -27,6 +27,8 @@ Package.onUse(function(api) {
       'schedule-picker.html'
       , 'schedule-picker.js'
     ], 'client');
+
+  api.export('later', 'client');
 });
 
 Package.onTest(function(api) {
