@@ -93,6 +93,10 @@
     this.Then(/^I should see the schedule (.*)$/, function (value, callback) {
       this.browser.waitForVisible('h1').getValue('[name="schedule.value"]').should.become(value).and.notify(callback);
     });
+
+    this.Then(/^I should see the selection (.*)$/, function (value, callback) {
+      this.browser.waitForVisible('h1').getValue('[name="schedule.selection"]').should.become(value).and.notify(callback);
+    });
   };
 
 })();

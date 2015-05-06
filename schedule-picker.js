@@ -290,4 +290,21 @@ Template.schedulePicker.helpers({
 
     return [].concat(options.schedule).join(", ");
   }
+  , selection: function () {
+    var tmpl = Template.instance();
+    var selection = tmpl.dict.get('value');
+    var options = this.options || Template.schedulePicker.defaultOptions;
+    var results = [];
+    var parentParts = [];
+    selection = selection || [];
+
+    var part;
+    while (options && options.options) {
+      part = selection.shift() || options.default || null;
+      options = part && options.options[part];
+      parentParts.push(part);
+    }
+
+    return JSON.stringify(parentParts);
+  }
 });
