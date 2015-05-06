@@ -206,7 +206,14 @@ Template.schedulePicker.defaultOptions.options.asneeded = _.defaults({
 }, Template.schedulePicker.defaultOptions.options.schedule);
 
 Template.schedulePicker.onCreated(function () {
-  this.dict = new ReactiveDict();
+  var tmpl = this;
+  tmpl.dict = new ReactiveDict();
+
+  tmpl.autorun(function () {
+    var data = Template.currentData();
+    if (data && data.value && data.value.selection)
+      tmpl.dict.set('value', data.value.selection);
+  });
 });
 
 Template.schedulePicker.events({
