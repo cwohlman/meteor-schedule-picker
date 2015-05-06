@@ -73,10 +73,12 @@
         ;
     });
 
+    var selectIndexMapping = ['scheduleKind', 'scheduleFrequency', 'scheduleRecurrence', 'scheduleTimes'];
+
     this.Given(/^I select these options:$/, function (table, callback) {
       var self = this;
       Promise.all(_.map(table.hashes(), function (a, i) {
-        return self.browser.selectByVisibleText('[data-option-index="' + i + '"]', a.option);
+        return self.browser.selectByVisibleText('[name="schedule.' + selectIndexMapping[i] + '"]', a.option);
       })).nodeify(callback);
     });
 

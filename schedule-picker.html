@@ -1,6 +1,6 @@
 <template name="schedulePicker">
   {{#each parts}}
-    <select name="{{../name}}.{{partName}}" data-option-index="{{index}}">
+    <select name="{{../name}}.{{partName}}">
       {{#each options}}
         <option value="{{value}}" selected="{{isSelected value ../value}}">
           {{name}}
