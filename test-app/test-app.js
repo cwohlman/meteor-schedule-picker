@@ -5,8 +5,12 @@ if (Meteor.isClient) {
   Session.setDefault('counter', 0);
 
   Template.hello.helpers({
-    startDate: function () {
-      return new Date("2015-01-01T00:00:00Z");
+    options: function () {
+      var options = EJSON.clone(Template.schedulePicker.defaultOptions);
+      options.options.test = {
+        name: "Test"
+      };
+      return options;
     }
   });
 

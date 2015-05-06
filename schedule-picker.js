@@ -222,7 +222,7 @@ Template.schedulePicker.helpers({
   parts: function () {
     var tmpl = Template.instance();
     var selection = tmpl.dict.get('value');
-    var options = Template.schedulePicker.defaultOptions;
+    var options = this.options || Template.schedulePicker.defaultOptions;
     var results = [];
     var parentParts = [];
     selection = selection || [];
@@ -255,7 +255,7 @@ Template.schedulePicker.helpers({
     var tmpl = Template.instance();
     var startDate = this.startDate;
     var selection = tmpl.dict.get('value');
-    var options = Template.schedulePicker.defaultOptions;
+    var options = this.options || Template.schedulePicker.defaultOptions;
     var results = [];
     var parentParts = [];
     selection = selection || [];
@@ -276,7 +276,7 @@ Template.schedulePicker.helpers({
   , scheduleTimes: function () {
     var tmpl = Template.instance();
     var selection = tmpl.dict.get('value');
-    var options = Template.schedulePicker.defaultOptions;
+    var options = this.options || Template.schedulePicker.defaultOptions;
     var results = [];
     var parentParts = [];
     selection = selection || [];
