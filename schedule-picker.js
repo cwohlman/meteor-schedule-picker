@@ -288,6 +288,6 @@ Template.schedulePicker.helpers({
       parentParts.push(part);
     }
 
-    return options.schedule;
+    return [].concat(options.schedule).join(", ");
   }
 });

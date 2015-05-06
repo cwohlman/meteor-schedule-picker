@@ -83,11 +83,11 @@
     });
 
     this.Then(/^I should see the time (.*)$/, function (value, callback) {
-      this.browser.waitForVisible('p').getText('.schedule-time').should.become(value).and.notify(callback);
+      this.browser.waitForVisible('h1').getText('.schedule-time').should.become("Repeats at these times: " + value).and.notify(callback);
     });
 
     this.Then(/^I should see the date "([^"]*)"$/, function (value, callback) {
-      this.browser.waitForVisible('p').getText('.next-date').should.become(value).and.notify(callback);
+      this.browser.waitForVisible('h1').getText('.next-date').should.become(value).and.notify(callback);
     });
 
     this.Then(/^I should see the schedule (.*)$/, function (value, callback) {

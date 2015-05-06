@@ -8,8 +8,8 @@
       {{/each}}
     </select>
   {{/each}}
-  <p class="schedule-time">
-    {{scheduleTimes}}
-  </p>
+  <span class="schedule-time">
+    Repeats at these times: {{scheduleTimes}}
+  </span>
   <input type="hidden" name="{{name}}.value" value="{{schedule}}">
 </template>
