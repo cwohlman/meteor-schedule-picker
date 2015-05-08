@@ -109,6 +109,9 @@ function makeConstructorFn (period, increment, max) {
   };
 }
 
+var minutesConstructor = makeConstructorFn('minute', 60 * 2, 60 * 24);
+var weekDayConstructor = makeConstructorFn('day', 1, 7);
+
 function makeMinutesOption(instance) {
   return {
     label: 'Time'
@@ -122,10 +125,42 @@ function makeMinutesOption(instance) {
   };
 }
 
+function makeWeekDaysOption(instance) {
+  return {
+    label: 'Day'
+    , name: 'day'
+    , value: instance.at
+    , options: weekDayOptions
+    , update: function (schedule, value) {
+      instance.at = value;
+      return schedule;
+    }
+  };
+}
+
+var minuteOptions = _.map(_.range(24 * 4), function (i) {
+  var minutes = i * 15;
+  return {
+    label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
+    , value: minutes
+  };
+});
+
+var weekDayOptions = _.map([
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+], function (name, i) {
+  i++;
+  return {
+    label: name
+    , value: i
+  };
+});
+
 var options = [
   {
     label: 'Daily'
     , name: 'daily'
+    , value: 'daily'
     , matches: function (schedule) {
       return schedule.kind === 'daily';
     }
@@ -141,7 +176,7 @@ var options = [
       };
     }
     , getOptions: function () {
-      return getOptions('day', makeConstructorFn('minute', 60 * 2, 60 * 24));
+      return getOptions('day', minutesConstructor);
     }
     , getInstances: function (schedule) {
       return schedule.on;
@@ -150,15 +185,47 @@ var options = [
       return [makeMinutesOption(instance)];
     }
   }
+  , {
+    label: 'Weekly'
+    , name: 'weekly'
+    , value: 'weekly'
+    , matches: function (schedule) {
+      return schedule.kind === 'weekly';
+    }
+    , createSchedule: function () {
+      return {
+        period: 'week'
+        , kind: 'weekly'
+        , interval: 1
+        , on: [
+          {
+            period: 'day'
+            , at: 1
+            , on: {
+              period: 'minute'
+              , at: 10 * 60
+            }
+        }]
+      };
+    }
+    , getOptions: function () {
+      return getOptions('week', function (instances) {
+        var day = weekDayConstructor(instances);
+        day.on = {
+          period: 'minute'
+          , at: 60 * 10 // 10 am
+        };
+        return day;
+      });
+    }
+    , getInstances: function (schedule) {
+      return schedule.on;
+    }
+    , getInstanceOptions: function (instance) {
+      return instance && instance.on && [makeWeekDaysOption(instance), makeMinutesOption(instance.on)];
+    }
+  }
 ];
-
-var minuteOptions = _.map(_.range(24 * 4), function (i) {
-  var minutes = i * 15;
-  return {
-    label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
-    , value: minutes
-  };
-});
 
 Template.schedulePicker.onCreated(function () {
   var tmpl = this;
@@ -234,7 +301,7 @@ Template.schedulePicker.events({
     var name = e.currentTarget.name;
     var value = e.currentTarget.value;
     if (name === "period") {
-      var selectedOption = _.findWhere(options, {name: name});
+      var selectedOption = _.findWhere(options, {name: value});
       if (selectedOption)
         tmpl.schedule.set(selectedOption.createSchedule());
     } else {
