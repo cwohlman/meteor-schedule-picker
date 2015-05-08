@@ -17,6 +17,7 @@ Package.onUse(function(api) {
       'underscore'
       , 'templating'
       , 'reactive-dict'
+      , 'reactive-var'
       , 'momentjs:moment@2.0.0'
     ]);
 

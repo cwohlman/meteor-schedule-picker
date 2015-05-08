@@ -1,5 +1,19 @@
+function getIntervals (period, count) {
+  if (!period)
+    return [];
+  
+  return _.map(_.range(1, count + 1), function (i) {
+    var number = i === 1 ? "" : (i + '');
+    var periodWithPlural = i === 1 ? period : period + 's';
+    return {
+      label: ["Every", number, periodWithPlural].join(" ")
+      , value: i
+    };
+  });
+}
+
 // http://stackoverflow.com/a/13627586/2391620
-function getWithSuffix(i) {
+function appendSuffix (i) {
     var j = i % 10,
         k = i % 100;
     if (j == 1 && k != 11) {
@@ -14,314 +28,207 @@ function getWithSuffix(i) {
     return i + "th";
 }
 
-var getCentralDistribution = function (a, b, i) {
-  var center = a / (b + 1);
-  return Math.floor((i + 1) * center);
-};
+function chooseParticle (word) {
+  return {
+    hour: 'an'
+    , isoWeekday: 'an'
+  }[word] || 'a';
+}
 
-var defaults = {
-  periodOptions: [
-    {
-      name: "Hourly"
-      , value: 'hour'
-      , getSchedule: function (instances) {
-        return {
-          period: 'day'
-          , interval: 1
-          , on: _.map(instances, function (instance) {
-            return {
-              period: 'minute'
-              , at: instance.minute
-            };
-          })
-        };
-      }
-      , getInstances: function (schedule) {
-        return _.map([].concat(schedule.on), function (a) {
-          return {
-            minute: a.at
-          };
-        });
-      }
-      , createInstances: function (interval, instanceCount) {
-        dailyInstanceCount = Math.floor(24 / interval);
-        return _.flatten(_.map(_.range(dailyInstanceCount), function (i) {
-          return _.map(_.range(instanceCount), function (ii) {
-            return {
-              minute: i * 60 * interval + ii * Math.floor(60 / instanceCount)
-            };
-          });
-        }));
-      }
-    }
-    , {
-      name: "Daily"
-      , value: 'day'
-      , createSchedule: function (interval, instanceCount) {
-        return {
-          period: 'day'
-          , interval: interval
-          , on: _.map(_.range(instanceCount), function (i) {
-            return {
-              period: 'minute'
-              , at: getCentralDistribution(24 * 4, instanceCount, i) * 15
-            };
-          })
-        };
-      }
-    }
-    , {
-      name: "Weekly"
-      , value: 'week'
-      , dayOptions: [
-        {value: 1, name: 'Monday'}
-        , {value: 2, name: 'Tuesday'}
-        , {value: 3, name: 'Wednesday'}
-        , {value: 4, name: 'Thursday'}
-        , {value: 5, name: 'Friday'}
-        , {value: 6, name: 'Saturday'}
-        , {value: 0, name: 'Sunday'}
-      ]
-      , schedule: function (interval, instanceCount) {
-        return {
-          period: 'week'
-          , interval: interval
-          , on: _.map(_.range(instanceCount), function (i) {
-            return {
-              period: 'day'
-              , at: getCentralDistribution(7, instanceCount, i)
-              , on: {
-                period: 'minute'
-                , at: 60 * 10 // 10 am
-              }
-            };
-          })
-        };
-      }
-    }
-    , {
-      name: "Monthly"
-      , value: 'month'
-      , schedule: function (interval, instanceCount) {
-        return {
-          period: 'month'
-          , interval: interval
-          , on: _.map(_.range(instanceCount), function (i) {
-            return {
-              period: 'day'
-              , at: getCentralDistribution(28, instanceCount, i) + 1
-              , on: {
-                period: 'minute'
-                , at: 60 * 10 // 10 am
-              }
-            };
-          })
-        };
-      }
-    }
-  ]
-  , requiredPeriods: [
-    'day'
-    , 'minute'
-  ]
-  , dayOptions: _.map(_.range(1, 29), function (i) {
-    var withSuffix = getWithSuffix(i);
-    return {
-      value: i
-      , name: withSuffix
-    };
-  })
-  , minuteOptions: _.map(_.range(0, 24 * 4), function (i) {
-    var value = i * 15;
-    return {
-      name: moment().startOf('day').add(value, 'minutes').format('hh:mm a')
-      , value: value
-    };
-  })
-};
+function getFrequencies (period, count) {
+  if (!period)
+    return [];
 
-var aVsAn = {
-  'day': 'a'
-  , 'hour': 'an'
-  , 'week': 'a'
-  , 'month': 'a'
-  , 'year': 'a'
-};
+  var particle = chooseParticle(period);
+
+  return _.map(_.range(1, count + 1), function (i) {
+    var name = i + " times";
+    if (i === 1)
+      name = "Once";
+    else if (i === 2)
+      name = "Twice";
+    return {
+      label: [name, particle, period].join(" ")
+      , value: i
+    };
+  });
+}
+
+function getInstances (instances, targetCount, constructorFn) {
+  while (instances.length > targetCount) {
+    instances.pop();
+  }
+  while (instances.length < targetCount) {
+    instances.push(constructorFn(instances));
+  }
+  return instances;
+}
+
+var options = [
+  {
+    label: 'Daily'
+    , name: 'daily'
+    , matches: function (schedule) {
+      return schedule.kind === 'daily';
+    }
+    , createSchedule: function () {
+      return {
+        period: 'day'
+        , kind: 'daily'
+        , interval: 1
+        , on: [{
+          period: 'minute'
+          , at: 10 * 60
+        }]
+      };
+    }
+    , getOptions: function () {
+      return [
+        {
+          label: 'Interval'
+          , name: 'interval'
+          , value: function (schedule) {
+            return schedule.interval;
+          }
+          , options: function (schedule) {
+            return getIntervals('day', 12);
+          }
+          , update: function (schedule, value) {
+            schedule.interval = value;
+            return schedule;
+          }
+        }
+        , {
+          label: 'Frequency'
+          , name: 'instanceCount'
+          , value: function (schedule) {
+            return schedule.on && schedule.on.length;
+          }
+          , options: function (schedule) {
+            return getFrequencies('day', 12);
+          }
+          , update: function (schedule, value) {
+            var instances = schedule.on;
+            instances = getInstances(instances, value, function (instances) {
+              var instance = _.last(instances);
+              return {
+                period: 'minute'
+                , at: (instance.at + 60 * 2) % (24 * 60)
+              };
+            });
+            schedule.on = instances;
+            return schedule;
+          }
+        }
+      ];
+    }
+    , getInstances: function (schedule) {
+      return schedule.on;
+    }
+    , getInstanceOptions: function (instance) {
+      return [{
+        label: 'Time'
+        , name: 'minute'
+        , value: instance.at
+        , options: minuteOptions
+        , update: function (schedule, value) {
+          instance.at = value;
+          return schedule;
+        }
+      }];
+    }
+  }
+];
+
+var minuteOptions = _.map(_.range(24 * 4), function (i) {
+  var minutes = i * 15;
+  return {
+    label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
+    , value: minutes
+  };
+});
 
 Template.schedulePicker.onCreated(function () {
   var tmpl = this;
-  tmpl.dict = new ReactiveDict();
-  tmpl.dict.set('period', 'day');
-  tmpl.dict.set('interval', 1);
-  tmpl.dict.set('instanceCount', 1);
+  tmpl.schedule = new ReactiveVar();
+  tmpl.selectedOption = new ReactiveVar();
+
+  tmpl.autorun(function () {
+    var data = Template.currentData();
+
+    tmpl.schedule.set(data.value || options[0].createSchedule());
+  });
+  tmpl.autorun(function () {
+    var schedule = tmpl.schedule.get();
+    var selectedOption;
+    if (schedule) {
+      selectedOption = _.find(options, function (o) {
+        return o.matches(schedule);
+      });
+      tmpl.selectedOption.set(selectedOption);
+    }
+  });
 });
 
 Template.schedulePicker.helpers({
-  periodOptions: function () {
-    return this.periodOptions || defaults.periodOptions;
+  scheduleKinds: function () {
+    return options;
   }
-  , intervalOptions: function () {
+  , selectedPeriod: function () {
     var tmpl = Template.instance();
-    var period = tmpl.dict.get('period');
-
-    if (!period)
-      return [];
-    
-    return [
-      ""
-      , "2"
-      , "3"
-      , "4"
-      , "5"
-      , "6"
-      , "7"
-      , "8"
-      , "9"
-      , "10"
-      , "11"
-      , "12"
-    ].map(function (a, i) {
-      i++;
-      if (i === 2)
-        period = period + 's';
-      return {
-        name: ["Every", a, period].join(" ")
-        , value: i
-      };
-    });
+    return tmpl.selectedOption.get() === this;
   }
-  , instanceCountOptions: function () {
+  , scheduleOptions: function () {
     var tmpl = Template.instance();
-    var period = tmpl.dict.get('period');
-    var particle = aVsAn[period] || 'a';
-
-    if (!period)
-      return [];
-
-    return [
-      "Once"
-      , "Twice"
-      , "3 times"
-      , "4 times"
-      , "5 times"
-      , "6 times"
-      , "7 times"
-      , "8 times"
-      , "9 times"
-      , "10 times"
-      , "11 times"
-      , "12 times"
-    ].map(function (a, i) {
-      i++;
-      return {
-        name: [a, particle, period].join(" ")
-        , value: i
-      };
-    });
+    var period = tmpl.selectedOption.get();
+    return period && period.getOptions();
   }
-  , showFrequency: function () {
-    return true;
-  }
-  , selected: function (a, b) {
+  , scheduleInstances: function () {
     var tmpl = Template.instance();
-    return a === tmpl.dict.get(b);
+    var period = tmpl.selectedOption.get();
+    var schedule = tmpl.schedule.get();
+    return period && schedule && period.getInstances(schedule);
   }
-  , matches: function (a, b) {
-    return a == b;
-  }
-  , instances: function () {
+  , instanceOptions: function () {
     var tmpl = Template.instance();
-    var instanceCount = Number(tmpl.dict.get('instanceCount'));
-    if (!instanceCount)
-      return;
-    var interval = tmpl.dict.get('interval');
-    if (!interval)
-      return;
-    var period = tmpl.dict.get('period');
-    if (!period)
-      return;
-    var periodDef = _.find(defaults.periodOptions, function (a) {
-      return a.value === period;
-    });
-    if (!periodDef || !_.isFunction(periodDef.createInstances))
-      return;
-    var instances = periodDef.createInstances(interval, instanceCount);
+    var period = tmpl.selectedOption.get();
+    var schedule = tmpl.schedule.get();
+    return period && schedule && period.getInstanceOptions(this);
+  }
+  , selected: function () {
+    // check whether this.value matches ../value
+    var parent = Template.parentData();
+    var value = parent.value;
+    if (_.isFunction(value)) {
+      var tmpl = Template.instance();
+      var schedule = tmpl.schedule.get();
+      value = schedule && value(schedule);
+    }
 
-    return _.map(instances, function (a, i) {
-      return {
-        requiredPeriods: _.map(a, function (val, p) {
-          return {
-            value: val
-            , period: p
-            , options: periodDef && periodDef[p + "Options"] || defaults[p + "Options"]
-          };
-        })
-        , index: i
-      };
-    });
-    // if (!sampleSchedule)
-    //   return;
-    // if (!sampleSchedule.on)
-    //   return;
-    // instanceCount = _.isArray(sampleSchedule.on) ? sampleSchedule.on.length : 1;
-
-    // var requiredPeriods = [];
-    // var currentSchedule = sampleSchedule;
-    // while (true) {
-    //   if (currentSchedule && currentSchedule.on) {
-    //     currentSchedule = currentSchedule.on;
-    //   } else
-    //     break;
-    //   if (currentSchedule[0]) {
-    //     currentSchedule = currentSchedule[0];
-    //   }
-    //   if (currentSchedule.period) {
-    //     requiredPeriods.push(currentSchedule.period);
-    //   }
-    // }
-
-    // var scheduleValues = _.map([].concat(sampleSchedule.on), function (a) {
-    //   var results = {};
-    //   while (a && a.at) {
-    //     results[a.period] = a.at;
-    //     a = a.on;
-    //   }
-    //   return results;
-    // });
-
-    // var instances = _.map(_.range(instanceCount), function (i) {
-    //   var instanceValues = scheduleValues[i] || {};
-    //   var periods = _.map(requiredPeriods, function (p) {
-    //     var value = tmpl.dict.get(i + "." + p) || instanceValues[p];
-    //     var options = periodDef && periodDef[p + "Options"] || defaults[p + "Options"];
-    //     return {
-    //       value: value
-    //       , period: p
-    //       , options: options
-    //     };
-    //   });
-    //   return {
-    //     requiredPeriods: periods
-    //     , index: i
-    //   };
-    // });
-
-    // return instances;
+    return value == this.value;
   }
   , schedule: function () {
-
+    var tmpl = Template.instance();
+    var schedule = tmpl.schedule.get();
+    return schedule;
+  }
+  , print: function (val) {
+    return JSON.stringify(val, null, 2);
   }
 });
 
 Template.schedulePicker.events({
   'change select': function (e, tmpl) {
-    tmpl.dict.set(e.currentTarget.name, e.currentTarget.value);
-  }
-  , 'change [name="period"]': function (e, tmpl) {
-    _.each(['instanceCount', 'interval'], function (a) {
-      tmpl.dict.set(a, 1);
-    });
-    if (e.currentTarget.value === 'hour')
-      tmpl.dict.set('interval', 4);
+    var name = e.currentTarget.name;
+    var value = e.currentTarget.value;
+    if (name === "period") {
+      var selectedOption = _.findWhere(options, {name: name});
+      if (selectedOption)
+        tmpl.schedule.set(selectedOption.createSchedule());
+    } else {
+      var schedule = tmpl.schedule.get();
+      schedule = this.update(schedule, value);
+      tmpl.schedule.set(schedule);
+    }
   }
 });

@@ -1,37 +1,40 @@
 <template name="schedulePicker">
   <div class="schedulePicker">
-    <div class="periodPicker">
+    <div class="scheduleKinds">
       <select name="period">
-        {{#each periodOptions}}
-          <option value="{{value}}" selected="{{selected value 'period'}}">{{name}}</option>
+        {{#each scheduleKinds}}
+          <option value="{{value}}" selected="{{selectedPeriod}}">
+            {{label}}
+          </option>
         {{/each}}
       </select>
     </div>
   </div>
-  {{#if showFrequency}}
-    <div class="frequencyPicker">
-      <select name="interval">
-        {{#each intervalOptions}}
-          <option value="{{value}}" selected="{{selected value 'interval'}}">{{name}}</option>
+  <div class="scheduleOptions">
+    {{#each scheduleOptions}}
+      <select name="{{name}}" class="{{../class}}">
+        {{#each options}}
+          <option value="{{value}}" selected="{{selected}}">
+            {{label}}
+          </option>
         {{/each}}
       </select>
-      <select name="instanceCount">
-        {{#each instanceCountOptions}}
-          <option value="{{value}}" selected="{{selected value 'instanceCount'}}">{{name}}</option>
+    {{/each}}
+  </div>
+  <div class="scheduleInstances">
+    {{#each scheduleInstances}}
+      <div>
+        {{#each instanceOptions}}
+          <select class="{{../../class}}">
+            {{#each options}}
+              <option value="{{value}}" selected="{{selected}}">
+                {{label}}
+              </option>
+            {{/each}}
+          </select>
         {{/each}}
-      </select>
-    </div>
-  {{/if}}
-
-  {{#each instances}}
-    <div class="instancePicker">
-      {{#each requiredPeriods}}
-        <select name="{{../index}}.{{period}}">
-          {{#each options}}
-            <option value="{{value}}" selected="{{matches value ../value}}">{{name}}</option>
-          {{/each}}
-        </select>
-      {{/each}}
-    </div>
-  {{/each}}
+      </div>
+    {{/each}}
+  </div>
+  <pre>{{print schedule}}</pre>
 </template>
