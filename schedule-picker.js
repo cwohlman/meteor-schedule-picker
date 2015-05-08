@@ -152,13 +152,21 @@ function makeMonthDaysOption(instance) {
   };
 }
 
-var minuteOptions = _.map(_.range(24 * 4), function (i) {
-  var minutes = i * 15;
-  return {
-    label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
-    , value: minutes
-  };
-});
+var minuteOptions = _.flatten([
+  _.map(Recur.defaultShortcuts, function (val, name) {
+    return {
+      label: name
+      , value: name
+    };
+  })
+  , _.map(_.range(24 * 4), function (i) {
+    var minutes = i * 15;
+    return {
+      label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
+      , value: minutes
+    };
+  })
+]);
 
 var weekDayOptions = _.map([
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -268,7 +276,7 @@ var options = [
         , interval: 1
         , on: [{
           period: 'minute'
-          , at: 10 * 60
+          , at: 'morning'
         }]
       };
     }
@@ -300,7 +308,7 @@ var options = [
             , at: 1
             , on: {
               period: 'minute'
-              , at: 10 * 60
+              , at: 'morning'
             }
         }]
       };
@@ -310,7 +318,7 @@ var options = [
         var day = weekDayConstructor(instances);
         day.on = {
           period: 'minute'
-          , at: 60 * 10 // 10 am
+          , at: 'morning'
         };
         return day;
       });
@@ -340,7 +348,7 @@ var options = [
             , at: 1
             , on: {
               period: 'minute'
-              , at: 10 * 60
+              , at: 'morning'
             }
         }]
       };
@@ -350,7 +358,7 @@ var options = [
         var day = monthDayConstructor(instances);
         day.on = {
           period: 'minute'
-          , at: 60 * 10 // 10 am
+          , at: 'morning' // 10 am
         };
         return day;
       });
@@ -411,11 +419,11 @@ var scheduleShortcuts = [
   {
     label: "Daily"
     , options: _.map([
-      ['daily', 'qd', 'Once Daily', 10 * 60]
-      , ['daily', 'bid', 'Twice Daily', 10 * 60, 22 * 60]
-      , ['daily', 'tid', 'Three Times Daily', 10 * 60, 16 * 60, 22 * 60]
+      ['daily', 'qd', 'Once Daily', 'morning']
+      , ['daily', 'bid', 'Twice Daily', 'morning', 'evening']
+      , ['daily', 'tid', 'Three Times Daily', 'morning', 16 * 60, 'evening']
       , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
-      , ['daily', 'qid', 'Four Times Daily', 10 * 60, 14 * 60, 18 * 60, 22 * 60]
+      , ['daily', 'qid', 'Four Times Daily', 'morning', 14 * 60, 18 * 60, 'evening']
     ], makeDailyShortcut)
   }
   , {

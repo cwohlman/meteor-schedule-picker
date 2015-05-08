@@ -19,6 +19,7 @@ Package.onUse(function(api) {
       , 'reactive-dict'
       , 'reactive-var'
       , 'momentjs:moment@2.0.0'
+      , 'cwohlman:recur'
     ]);
 
   api.addFiles([
