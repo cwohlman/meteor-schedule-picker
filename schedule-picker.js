@@ -111,6 +111,7 @@ function makeConstructorFn (period, increment, max) {
 
 var minutesConstructor = makeConstructorFn('minute', 60 * 2, 60 * 24);
 var weekDayConstructor = makeConstructorFn('day', 1, 7);
+var monthDayConstructor = makeConstructorFn('day', 1, 28);
 
 function makeMinutesOption(instance) {
   return {
@@ -138,6 +139,19 @@ function makeWeekDaysOption(instance) {
   };
 }
 
+function makeMonthDaysOption(instance) {
+  return {
+    label: 'Day'
+    , name: 'day'
+    , value: instance.at
+    , options: monthDayOptions
+    , update: function (schedule, value) {
+      instance.at = value;
+      return schedule;
+    }
+  };
+}
+
 var minuteOptions = _.map(_.range(24 * 4), function (i) {
   var minutes = i * 15;
   return {
@@ -152,6 +166,13 @@ var weekDayOptions = _.map([
   i++;
   return {
     label: name
+    , value: i
+  };
+});
+
+var monthDayOptions = _.map(_.range(1, 29), function (i) {
+  return {
+    label: appendSuffix(i)
     , value: i
   };
 });
@@ -174,6 +195,7 @@ var options = [
       return schedule.kind === 'hourly';
     }
     , createSchedule: function () {
+      // Hourly is really an alias for a certain kind of daily schedule.
       return {
         period: 'day'
         , kind: 'hourly'
@@ -227,6 +249,8 @@ var options = [
       return schedule.on;
     }
     , getInstanceOptions: function (instance) {
+      // XXX since this is hourly, we should really update all of the other
+      // instances to match the specified hourly distance.
       return [makeMinutesOption(instance)];
     }
   }
@@ -296,6 +320,46 @@ var options = [
     }
     , getInstanceOptions: function (instance) {
       return instance && instance.on && [makeWeekDaysOption(instance), makeMinutesOption(instance.on)];
+    }
+  }
+  , {
+    label: 'Monthly'
+    , name: 'monthly'
+    , value: 'monthly'
+    , matches: function (schedule) {
+      return schedule.kind === 'monthly';
+    }
+    , createSchedule: function () {
+      return {
+        period: 'month'
+        , kind: 'monthly'
+        , interval: 1
+        , on: [
+          {
+            period: 'day'
+            , at: 1
+            , on: {
+              period: 'minute'
+              , at: 10 * 60
+            }
+        }]
+      };
+    }
+    , getOptions: function () {
+      return getOptions('month', function (instances) {
+        var day = monthDayConstructor(instances);
+        day.on = {
+          period: 'minute'
+          , at: 60 * 10 // 10 am
+        };
+        return day;
+      });
+    }
+    , getInstances: function (schedule) {
+      return schedule.on;
+    }
+    , getInstanceOptions: function (instance) {
+      return instance && instance.on && [makeMonthDaysOption(instance), makeMinutesOption(instance.on)];
     }
   }
 ];
@@ -373,6 +437,8 @@ Template.schedulePicker.events({
   'change select': function (e, tmpl) {
     var name = e.currentTarget.name;
     var value = e.currentTarget.value;
+    if (_.isFinite(value))
+      value = Number(value);
     if (name === "period") {
       var selectedOption = _.findWhere(options, {name: value});
       if (selectedOption)
