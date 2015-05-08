@@ -400,6 +400,7 @@ function makeDailyShortcut (args) {
       return {
         kind: kind
         , period: 'day'
+        , interval: 1
         , on: _.map(times, function (time) {
           return {
             period: 'minute'
