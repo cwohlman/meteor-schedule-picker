@@ -1,7 +1,7 @@
 <template name="schedulePicker">
-  <div class="schedulePicker">
-    <div class="scheduleKinds">
-      <select name="period">
+  <div class="schedulePicker {{wrapperClass}}">
+    <div class="{{inputWrapperClass}}">
+      <select name="period" class="{{inputClass}}">
         {{#each scheduleKinds}}
           <option value="{{value}}" selected="{{selectedPeriod}}">
             {{label}}
@@ -10,31 +10,36 @@
       </select>
     </div>
   </div>
-  <div class="scheduleOptions">
+  <div class="scheduleOptions {{wrapperClass}}">
     {{#each scheduleOptions}}
-      <select name="{{name}}" class="{{../class}}">
-        {{#each options}}
-          <option value="{{value}}" selected="{{selected}}">
-            {{label}}
-          </option>
-        {{/each}}
-      </select>
+      <div class="{{../inputWrapperClass}}">
+        <select class="{{../inputClass}}">
+          {{#each options}}
+            <option value="{{value}}" selected="{{selected}}">
+              {{label}}
+            </option>
+          {{/each}}
+        </select>        
+      </div>
+
     {{/each}}
   </div>
-  <div class="scheduleInstances">
+  <div class="scheduleInstances {{wrapperClass}}">
     {{#each scheduleInstances}}
-      <div>
+      <div class="scheduleInstance">
         {{#each instanceOptions}}
-          <select class="{{../../class}}">
-            {{#each options}}
-              <option value="{{value}}" selected="{{selected}}">
-                {{label}}
-              </option>
-            {{/each}}
-          </select>
+          <div class="{{../../inputWrapperClass}}">
+            <select class="{{../../inputClass}}">
+              {{#each options}}
+                <option value="{{value}}" selected="{{selected}}">
+                  {{label}}
+                </option>
+              {{/each}}
+            </select>            
+          </div>
         {{/each}}
       </div>
     {{/each}}
   </div>
-  <pre>{{print schedule}}</pre>
+  <input name="{{name}}" type="hidden" value="{{print schedule}}">
 </template>
