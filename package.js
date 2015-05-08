@@ -1,6 +1,6 @@
 Package.describe({
   name: 'cwohlman:schedule-picker',
-  version: "0.0.2",
+  version: "0.1.0",
   // Brief, one-line summary of the package.
   summary: 'Allow users to pick a schedule for some recurring event.',
   // URL to the Git repository containing the source code for this package.
@@ -17,6 +17,7 @@ Package.onUse(function(api) {
       'underscore'
       , 'templating'
       , 'reactive-dict'
+      , 'momentjs:moment@2.0.0'
     ]);
 
   api.addFiles([

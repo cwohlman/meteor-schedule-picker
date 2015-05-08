@@ -6,11 +6,7 @@ if (Meteor.isClient) {
 
   Template.hello.helpers({
     options: function () {
-      var options = EJSON.clone(Template.schedulePicker.defaultOptions);
-      options.options.test = {
-        name: "Test"
-      };
-      return options;
+
     }
   });
 
