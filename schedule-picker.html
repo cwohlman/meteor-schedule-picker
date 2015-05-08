@@ -1,6 +1,15 @@
 <template name="schedulePicker">
   <div class="schedulePicker {{wrapperClass}}">
     <div class="{{inputWrapperClass}}">
+      <select name="shortcut" class="{{inputClass}}">
+        {{#each scheduleShortcuts}}
+          <option value="{{value}}" selected="{{selectedShortcut}}">
+            {{label}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+    <div class="{{inputWrapperClass}}">
       <select name="period" class="{{inputClass}}">
         {{#each scheduleKinds}}
           <option value="{{value}}" selected="{{selectedPeriod}}">

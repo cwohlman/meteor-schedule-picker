@@ -364,10 +364,56 @@ var options = [
   }
 ];
 
+var scheduleShortcuts = [
+  {
+    label: 'Twice a day (bid)'
+    , name: 'bid'
+    , value: 'bid'
+    , matches: function (schedule) {
+      return _.isEqual(schedule, this.schedule);
+    }
+    , createSchedule: function () {
+      return {
+        kind: 'daily'
+        , period: 'day'
+        , on: [
+          {
+            period: 'minute'
+            , at: 10 * 60
+          }
+          , {
+            period: 'minute'
+            , at: 22 * 60
+          }
+        ]
+      };
+    }
+  }
+  , {
+    label: 'Custom'
+    , name: 'custom'
+    , value: 'custom'
+    , matches: function (schedule) {
+      return true;
+    }
+    , createSchedule: function () {
+      return {
+        kind: 'daily'
+        , period: 'day'
+        , on: [{
+          period: 'minute'
+          , at: 12 * 60
+        }]
+      };
+    }
+  }
+];
+
 Template.schedulePicker.onCreated(function () {
   var tmpl = this;
   tmpl.schedule = new ReactiveVar();
   tmpl.selectedOption = new ReactiveVar();
+  tmpl.selectedShortcut = new ReactiveVar();
 
   tmpl.autorun(function () {
     var data = Template.currentData();
@@ -376,12 +422,16 @@ Template.schedulePicker.onCreated(function () {
   });
   tmpl.autorun(function () {
     var schedule = tmpl.schedule.get();
-    var selectedOption;
+    var selectedOption, selectedShortcut;
     if (schedule) {
       selectedOption = _.find(options, function (o) {
         return o.matches(schedule);
       });
       tmpl.selectedOption.set(selectedOption);
+      selectedShortcut = _.find(scheduleShortcuts, function (o) {
+        return o.matches(schedule);
+      });
+      tmpl.selectedShortcut.set(selectedShortcut);
     }
   });
 });
@@ -390,9 +440,16 @@ Template.schedulePicker.helpers({
   scheduleKinds: function () {
     return options;
   }
+  , scheduleShortcuts: function () {
+    return scheduleShortcuts;
+  }
   , selectedPeriod: function () {
     var tmpl = Template.instance();
     return tmpl.selectedOption.get() === this;
+  }
+  , selectedShortcut: function () {
+    var tmpl = Template.instance();
+    return tmpl.selectedShortcut.get() === this;
   }
   , scheduleOptions: function () {
     var tmpl = Template.instance();
@@ -443,6 +500,11 @@ Template.schedulePicker.events({
       var selectedOption = _.findWhere(options, {name: value});
       if (selectedOption)
         tmpl.schedule.set(selectedOption.createSchedule());
+    } else if (name === 'shortcut') {
+      var selectedShortcut = _.findWhere(scheduleShortcuts, {name: value});
+      if (selectedShortcut)
+        tmpl.schedule.set(selectedShortcut.createSchedule());
+
     } else {
       var schedule = tmpl.schedule.get();
       schedule = this.update(schedule, value);
