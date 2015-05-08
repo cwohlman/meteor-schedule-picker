@@ -364,31 +364,41 @@ var options = [
   }
 ];
 
-var scheduleShortcuts = [
-  {
-    label: 'Twice a day (bid)'
-    , name: 'bid'
-    , value: 'bid'
+function makeDailyShortcut (args) {
+  var kind = args.shift();
+  var name = args.shift();
+  var label = args.shift();
+  var times = args;
+  return {
+    label: "(" +name.toUpperCase() + ") " + label 
+    , name: name
+    , value: name
     , matches: function (schedule) {
-      return _.isEqual(schedule, this.schedule);
+      return schedule.kind === kind && _.isEqual(_.pluck(schedule.on, 'at'), times);
     }
     , createSchedule: function () {
       return {
-        kind: 'daily'
+        kind: kind
         , period: 'day'
-        , on: [
-          {
+        , on: _.map(times, function (time) {
+          return {
             period: 'minute'
-            , at: 10 * 60
-          }
-          , {
-            period: 'minute'
-            , at: 22 * 60
-          }
-        ]
+            , at:  time
+          };
+        })
       };
     }
-  }
+  };
+}
+
+var scheduleShortcuts = _.flatten([
+  _.map([
+    ['daily', 'qd', 'Once Daily', 10 * 60]
+    , ['daily', 'bid', 'Twice Daily', 10 * 60, 22 * 60]
+    , ['daily', 'tid', 'Three Times Daily', 10 * 60, 16 * 60, 22 * 60]
+    , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
+    , ['daily', 'qid', 'Four Times Daily', 10 * 60, 14 * 60, 18 * 60, 22 * 60]
+  ], makeDailyShortcut)
   , {
     label: 'Custom'
     , name: 'custom'
@@ -407,7 +417,7 @@ var scheduleShortcuts = [
       };
     }
   }
-];
+]);
 
 Template.schedulePicker.onCreated(function () {
   var tmpl = this;
