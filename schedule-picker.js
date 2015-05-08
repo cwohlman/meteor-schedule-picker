@@ -170,10 +170,10 @@ var weekDayOptions = _.map([
   };
 });
 
-var monthDayOptions = _.map(_.range(1, 29), function (i) {
+var monthDayOptions = _.map(_.range(1, 32), function (i) {
   return {
     label: appendSuffix(i)
-    , value: i
+    , value: i - 1
   };
 });
 
