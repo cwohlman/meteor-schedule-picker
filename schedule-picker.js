@@ -156,8 +156,81 @@ var weekDayOptions = _.map([
   };
 });
 
+var hours = {
+  1: _.range(0, 24)
+  , 2: _.range(0, 24, 2)
+  , 4: _.range(2, 24, 4)
+  , 6: _.range(0, 24, 6)
+  , 8: _.range(6, 24, 8)
+  , 12: _.range(10, 24, 12)
+};
+
 var options = [
   {
+    label: 'Hourly'
+    , name: 'hourly'
+    , value: 'hourly'
+    , matches: function (schedule) {
+      return schedule.kind === 'hourly';
+    }
+    , createSchedule: function () {
+      return {
+        period: 'day'
+        , kind: 'hourly'
+        , interval: 1
+        , on: [{
+          period: 'minute'
+          , at: 0 * 60
+        }, {
+          period: 'minute'
+          , at: 6 * 60
+        }, {
+          period: 'minute'
+          , at: 12 * 60
+        }, {
+          period: 'minute'
+          , at: 18 * 60
+        }]
+      };
+    }
+    , getOptions: function () {
+      return [{
+        label: 'Interval'
+        , name: 'interval'
+        , value: function (schedule) {
+          return Math.floor(24 / schedule.on.length);
+        }
+        , options: function (schedule) {
+          return _.map([1,2,4,6,8,12], function (i)  {
+            var number = i === 1 ? "" : (i + '');
+            var periodWithPlural = i === 1 ? 'hour' : 'hours';
+            return {
+              label: ["Every", number, periodWithPlural].join(" ")
+              , value: i
+            };
+          });
+        }
+        , update: function (schedule, value) {
+          var instances = schedule.on;
+          instances = _.map(hours[value], function (i) {
+            return {
+              period: 'minute'
+              , at: i * 60
+            };
+          });
+          schedule.on = instances;
+          return schedule;
+        }
+      }];
+    }
+    , getInstances: function (schedule) {
+      return schedule.on;
+    }
+    , getInstanceOptions: function (instance) {
+      return [makeMinutesOption(instance)];
+    }
+  }
+  , {
     label: 'Daily'
     , name: 'daily'
     , value: 'daily'
@@ -235,7 +308,7 @@ Template.schedulePicker.onCreated(function () {
   tmpl.autorun(function () {
     var data = Template.currentData();
 
-    tmpl.schedule.set(data.value || options[0].createSchedule());
+    tmpl.schedule.set(data.value || options[1].createSchedule());
   });
   tmpl.autorun(function () {
     var schedule = tmpl.schedule.get();
