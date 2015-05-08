@@ -1,3 +1,15 @@
+Recur.defaultShortcuts = {
+  morning: 60 * 10
+  , afternoon: 60 * 14
+  , lateAfternoon: 60 * 17
+  , evening: 60 * 22
+  , breakfast: 60 * 8
+  , lunch: 60 * 12
+  , supper: 60 * 20
+  , wakup: 60 * 7
+  , bedtime: 60 * 23
+};
+
 function getIntervals (period, count) {
   if (!period)
     return [];
