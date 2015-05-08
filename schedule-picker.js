@@ -64,6 +64,64 @@ function getInstances (instances, targetCount, constructorFn) {
   return instances;
 }
 
+function getOptions (period, constructorFn) {
+  return [
+    {
+      label: 'Interval'
+      , name: 'interval'
+      , value: function (schedule) {
+        return schedule.interval;
+      }
+      , options: function (schedule) {
+        return getIntervals(period, 12);
+      }
+      , update: function (schedule, value) {
+        schedule.interval = value;
+        return schedule;
+      }
+    }
+    , {
+      label: 'Frequency'
+      , name: 'instanceCount'
+      , value: function (schedule) {
+        return schedule.on && schedule.on.length;
+      }
+      , options: function (schedule) {
+        return getFrequencies(period, 12);
+      }
+      , update: function (schedule, value) {
+        var instances = schedule.on;
+        instances = getInstances(instances, value, constructorFn);
+        schedule.on = instances;
+        return schedule;
+      }
+    }
+  ];
+}
+
+function makeConstructorFn (period, increment, max) {
+  return function (instances) {
+    var instance = _.last(instances);
+    return {
+      period: period
+      , at: (instance.at + increment) % max
+    };
+  };
+}
+
+function makeMinutesOption(instance) {
+  return {
+    label: 'Time'
+    , name: 'minute'
+    , value: instance.at
+    , options: minuteOptions
+    , update: function (schedule, value) {
+      instance.at = value;
+      return schedule;
+    }
+  };
+}
+
 var options = [
   {
     label: 'Daily'
@@ -83,59 +141,13 @@ var options = [
       };
     }
     , getOptions: function () {
-      return [
-        {
-          label: 'Interval'
-          , name: 'interval'
-          , value: function (schedule) {
-            return schedule.interval;
-          }
-          , options: function (schedule) {
-            return getIntervals('day', 12);
-          }
-          , update: function (schedule, value) {
-            schedule.interval = value;
-            return schedule;
-          }
-        }
-        , {
-          label: 'Frequency'
-          , name: 'instanceCount'
-          , value: function (schedule) {
-            return schedule.on && schedule.on.length;
-          }
-          , options: function (schedule) {
-            return getFrequencies('day', 12);
-          }
-          , update: function (schedule, value) {
-            var instances = schedule.on;
-            instances = getInstances(instances, value, function (instances) {
-              var instance = _.last(instances);
-              return {
-                period: 'minute'
-                , at: (instance.at + 60 * 2) % (24 * 60)
-              };
-            });
-            schedule.on = instances;
-            return schedule;
-          }
-        }
-      ];
+      return getOptions('day', makeConstructorFn('minute', 60 * 2, 60 * 24));
     }
     , getInstances: function (schedule) {
       return schedule.on;
     }
     , getInstanceOptions: function (instance) {
-      return [{
-        label: 'Time'
-        , name: 'minute'
-        , value: instance.at
-        , options: minuteOptions
-        , update: function (schedule, value) {
-          instance.at = value;
-          return schedule;
-        }
-      }];
+      return [makeMinutesOption(instance)];
     }
   }
 ];
