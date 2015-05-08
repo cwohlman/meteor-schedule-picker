@@ -32,7 +32,7 @@ var defaults = {
           , on: _.map(_.range(instanceCount), function (i) {
             return {
               period: 'minute'
-              , at: getCentralDistribution(60 * 24, instanceCount, i)
+              , at: getCentralDistribution(24 * 4, instanceCount, i) * 15
             };
           })
         };
@@ -48,7 +48,7 @@ var defaults = {
           , on: _.map(_.range(instanceCount), function (i) {
             return {
               period: 'minute'
-              , at: getCentralDistribution(60 * 24, instanceCount, i)
+              , at: getCentralDistribution(24 * 4, instanceCount, i) * 15
             };
           })
         };
@@ -115,8 +115,8 @@ var defaults = {
       , name: withSuffix
     };
   })
-  , minuteOptions: _.map(_.range(0, 48), function (i) {
-    var value = i * 30;
+  , minuteOptions: _.map(_.range(0, 24 * 4), function (i) {
+    var value = i * 15;
     return {
       name: moment().startOf('day').add(value, 'minutes').format('hh:mm a')
       , value: value
@@ -215,7 +215,7 @@ Template.schedulePicker.helpers({
   }
   , instances: function () {
     var tmpl = Template.instance();
-    var instanceCount = tmpl.dict.get('instanceCount');
+    var instanceCount = Number(tmpl.dict.get('instanceCount'));
     if (!instanceCount)
       return;
     var interval = tmpl.dict.get('interval');
@@ -237,22 +237,33 @@ Template.schedulePicker.helpers({
     instanceCount = _.isArray(sampleSchedule.on) ? sampleSchedule.on.length : 1;
 
     var requiredPeriods = [];
+    var currentSchedule = sampleSchedule;
     while (true) {
-      if (sampleSchedule && sampleSchedule.on) {
-        sampleSchedule = sampleSchedule.on;
+      if (currentSchedule && currentSchedule.on) {
+        currentSchedule = currentSchedule.on;
       } else
         break;
-      if (sampleSchedule[0]) {
-        sampleSchedule = sampleSchedule[0];
+      if (currentSchedule[0]) {
+        currentSchedule = currentSchedule[0];
       }
-      if (sampleSchedule.period) {
-        requiredPeriods.push(sampleSchedule.period);
+      if (currentSchedule.period) {
+        requiredPeriods.push(currentSchedule.period);
       }
     }
 
+    var scheduleValues = _.map([].concat(sampleSchedule.on), function (a) {
+      var results = {};
+      while (a && a.at) {
+        results[a.period] = a.at;
+        a = a.on;
+      }
+      return results;
+    });
+
     var instances = _.map(_.range(instanceCount), function (i) {
+      var instanceValues = scheduleValues[i] || {};
       var periods = _.map(requiredPeriods, function (p) {
-        var value = tmpl.dict.get(i + "." + p);
+        var value = tmpl.dict.get(i + "." + p) || instanceValues[p];
         var options = periodDef && periodDef[p + "Options"] || defaults[p + "Options"];
         return {
           value: value
@@ -273,5 +284,10 @@ Template.schedulePicker.helpers({
 Template.schedulePicker.events({
   'change select': function (e, tmpl) {
     tmpl.dict.set(e.currentTarget.name, e.currentTarget.value);
+  }
+  , 'change [name="period"]': function (e, tmpl) {
+    _.each(['instanceCount', 'interval'], function (a) {
+      tmpl.dict.set(a, 1);
+    });
   }
 });
