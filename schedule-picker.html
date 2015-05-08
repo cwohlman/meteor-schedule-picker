@@ -3,9 +3,13 @@
     <div class="{{inputWrapperClass}}">
       <select name="shortcut" class="{{inputClass}}">
         {{#each scheduleShortcuts}}
-          <option value="{{value}}" selected="{{selectedShortcut}}">
-            {{label}}
-          </option>
+          <optgroup label="{{label}}">
+            {{#each options}}
+              <option value="{{value}}" selected="{{selectedShortcut}}">
+                {{label}}
+              </option>
+            {{/each}}
+          </optgroup>
         {{/each}}
       </select>
     </div>

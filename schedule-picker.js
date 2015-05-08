@@ -391,33 +391,55 @@ function makeDailyShortcut (args) {
   };
 }
 
-var scheduleShortcuts = _.flatten([
-  _.map([
-    ['daily', 'qd', 'Once Daily', 10 * 60]
-    , ['daily', 'bid', 'Twice Daily', 10 * 60, 22 * 60]
-    , ['daily', 'tid', 'Three Times Daily', 10 * 60, 16 * 60, 22 * 60]
-    , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
-    , ['daily', 'qid', 'Four Times Daily', 10 * 60, 14 * 60, 18 * 60, 22 * 60]
-  ], makeDailyShortcut)
+function findShortcut(scheduleOrName) {
+  var predicate = _.isString(scheduleOrName) ?
+    function (o) {
+      return o.value === scheduleOrName;
+    } : function (o) {
+      return o.matches(scheduleOrName);
+    };
+
+  return _.chain(scheduleShortcuts)
+    .pluck('options')
+    .flatten()
+    .find(predicate)
+    .value()
+    ;
+}
+
+var scheduleShortcuts = [
+  {
+    label: "Daily"
+    , options: _.map([
+      ['daily', 'qd', 'Once Daily', 10 * 60]
+      , ['daily', 'bid', 'Twice Daily', 10 * 60, 22 * 60]
+      , ['daily', 'tid', 'Three Times Daily', 10 * 60, 16 * 60, 22 * 60]
+      , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
+      , ['daily', 'qid', 'Four Times Daily', 10 * 60, 14 * 60, 18 * 60, 22 * 60]
+    ], makeDailyShortcut)
+  }
   , {
     label: 'Custom'
-    , name: 'custom'
-    , value: 'custom'
-    , matches: function (schedule) {
-      return true;
-    }
-    , createSchedule: function () {
-      return {
-        kind: 'daily'
-        , period: 'day'
-        , on: [{
-          period: 'minute'
-          , at: 12 * 60
-        }]
-      };
-    }
+    , options: [{
+      label: 'Custom'
+      , name: 'custom'
+      , value: 'custom'
+      , matches: function (schedule) {
+        return true;
+      }
+      , createSchedule: function () {
+        return {
+          kind: 'daily'
+          , period: 'day'
+          , on: [{
+            period: 'minute'
+            , at: 12 * 60
+          }]
+        };
+      }
+    }]
   }
-]);
+];
 
 Template.schedulePicker.onCreated(function () {
   var tmpl = this;
@@ -438,9 +460,7 @@ Template.schedulePicker.onCreated(function () {
         return o.matches(schedule);
       });
       tmpl.selectedOption.set(selectedOption);
-      selectedShortcut = _.find(scheduleShortcuts, function (o) {
-        return o.matches(schedule);
-      });
+      selectedShortcut = findShortcut(schedule);
       tmpl.selectedShortcut.set(selectedShortcut);
     }
   });
@@ -511,7 +531,7 @@ Template.schedulePicker.events({
       if (selectedOption)
         tmpl.schedule.set(selectedOption.createSchedule());
     } else if (name === 'shortcut') {
-      var selectedShortcut = _.findWhere(scheduleShortcuts, {name: value});
+      var selectedShortcut = findShortcut(value);
       if (selectedShortcut)
         tmpl.schedule.set(selectedShortcut.createSchedule());
 
