@@ -14,15 +14,45 @@ function getWithSuffix(i) {
     return i + "th";
 }
 
+var getCentralDistribution = function (a, b, i) {
+  var center = a / (b + 1);
+  return Math.floor((i + 1) * center);
+};
+
 var defaults = {
   periodOptions: [
     {
       name: "Hourly"
       , value: 'hour'
+      , schedule: function (interval, instanceCount) {
+        instanceCount = instanceCount * 24 / interval;
+        return {
+          period: 'day'
+          , interval: interval
+          , on: _.map(_.range(instanceCount), function (i) {
+            return {
+              period: 'minute'
+              , at: getCentralDistribution(60 * 24, instanceCount, i)
+            };
+          })
+        };
+      }
     }
     , {
       name: "Daily"
       , value: 'day'
+      , schedule: function (interval, instanceCount) {
+        return {
+          period: 'day'
+          , interval: interval
+          , on: _.map(_.range(instanceCount), function (i) {
+            return {
+              period: 'minute'
+              , at: getCentralDistribution(60 * 24, instanceCount, i)
+            };
+          })
+        };
+      }
     }
     , {
       name: "Weekly"
@@ -36,10 +66,42 @@ var defaults = {
         , {value: 6, name: 'Saturday'}
         , {value: 0, name: 'Sunday'}
       ]
+      , schedule: function (interval, instanceCount) {
+        return {
+          period: 'week'
+          , interval: interval
+          , on: _.map(_.range(instanceCount), function (i) {
+            return {
+              period: 'day'
+              , at: getCentralDistribution(7, instanceCount, i)
+              , on: {
+                period: 'minute'
+                , at: 60 * 10 // 10 am
+              }
+            };
+          })
+        };
+      }
     }
     , {
       name: "Monthly"
       , value: 'month'
+      , schedule: function (interval, instanceCount) {
+        return {
+          period: 'month'
+          , interval: interval
+          , on: _.map(_.range(instanceCount), function (i) {
+            return {
+              period: 'day'
+              , at: getCentralDistribution(28, instanceCount, i) + 1
+              , on: {
+                period: 'minute'
+                , at: 60 * 10 // 10 am
+              }
+            };
+          })
+        };
+      }
     }
   ]
   , requiredPeriods: [
@@ -154,11 +216,39 @@ Template.schedulePicker.helpers({
   , instances: function () {
     var tmpl = Template.instance();
     var instanceCount = tmpl.dict.get('instanceCount');
+    if (!instanceCount)
+      return;
+    var interval = tmpl.dict.get('interval');
+    if (!interval)
+      return;
     var period = tmpl.dict.get('period');
+    if (!period)
+      return;
     var periodDef = _.find(defaults.periodOptions, function (a) {
       return a.value === period;
     });
-    var requiredPeriods = _.difference(defaults.requiredPeriods, [periodDef.period || period]);
+    if (!periodDef || !_.isFunction(periodDef.schedule))
+      return;
+    var sampleSchedule = periodDef.schedule(interval, instanceCount);
+    if (!sampleSchedule)
+      return;
+    if (!sampleSchedule.on)
+      return;
+    instanceCount = _.isArray(sampleSchedule.on) ? sampleSchedule.on.length : 1;
+
+    var requiredPeriods = [];
+    while (true) {
+      if (sampleSchedule && sampleSchedule.on) {
+        sampleSchedule = sampleSchedule.on;
+      } else
+        break;
+      if (sampleSchedule[0]) {
+        sampleSchedule = sampleSchedule[0];
+      }
+      if (sampleSchedule.period) {
+        requiredPeriods.push(sampleSchedule.period);
+      }
+    }
 
     var instances = _.map(_.range(instanceCount), function (i) {
       var periods = _.map(requiredPeriods, function (p) {
