@@ -289,5 +289,7 @@ Template.schedulePicker.events({
     _.each(['instanceCount', 'interval'], function (a) {
       tmpl.dict.set(a, 1);
     });
+    if (e.currentTarget.value === 'hour')
+      tmpl.dict.set('interval', 4);
   }
 });
