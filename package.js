@@ -22,15 +22,10 @@ Package.onUse(function(api) {
     ]);
 
   api.addFiles([
-    'later.js'
-  ], 'client');
-
-  api.addFiles([
       'schedule-picker.html'
       , 'schedule-picker.js'
     ], 'client');
 
-  api.export('later', 'client');
 });
 
 Package.onTest(function(api) {
