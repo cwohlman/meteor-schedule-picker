@@ -24,24 +24,40 @@ var defaults = {
     {
       name: "Hourly"
       , value: 'hour'
-      , schedule: function (interval, instanceCount) {
-        instanceCount = instanceCount * 24 / interval;
+      , getSchedule: function (instances) {
         return {
           period: 'day'
-          , interval: interval
-          , on: _.map(_.range(instanceCount), function (i) {
+          , interval: 1
+          , on: _.map(instances, function (instance) {
             return {
               period: 'minute'
-              , at: getCentralDistribution(24 * 4, instanceCount, i) * 15
+              , at: instance.minute
             };
           })
         };
+      }
+      , getInstances: function (schedule) {
+        return _.map([].concat(schedule.on), function (a) {
+          return {
+            minute: a.at
+          };
+        });
+      }
+      , createInstances: function (interval, instanceCount) {
+        dailyInstanceCount = Math.floor(24 / interval);
+        return _.flatten(_.map(_.range(dailyInstanceCount), function (i) {
+          return _.map(_.range(instanceCount), function (ii) {
+            return {
+              minute: i * 60 * interval + ii * Math.floor(60 / instanceCount)
+            };
+          });
+        }));
       }
     }
     , {
       name: "Daily"
       , value: 'day'
-      , schedule: function (interval, instanceCount) {
+      , createSchedule: function (interval, instanceCount) {
         return {
           period: 'day'
           , interval: interval
@@ -227,57 +243,73 @@ Template.schedulePicker.helpers({
     var periodDef = _.find(defaults.periodOptions, function (a) {
       return a.value === period;
     });
-    if (!periodDef || !_.isFunction(periodDef.schedule))
+    if (!periodDef || !_.isFunction(periodDef.createInstances))
       return;
-    var sampleSchedule = periodDef.schedule(interval, instanceCount);
-    if (!sampleSchedule)
-      return;
-    if (!sampleSchedule.on)
-      return;
-    instanceCount = _.isArray(sampleSchedule.on) ? sampleSchedule.on.length : 1;
+    var instances = periodDef.createInstances(interval, instanceCount);
 
-    var requiredPeriods = [];
-    var currentSchedule = sampleSchedule;
-    while (true) {
-      if (currentSchedule && currentSchedule.on) {
-        currentSchedule = currentSchedule.on;
-      } else
-        break;
-      if (currentSchedule[0]) {
-        currentSchedule = currentSchedule[0];
-      }
-      if (currentSchedule.period) {
-        requiredPeriods.push(currentSchedule.period);
-      }
-    }
-
-    var scheduleValues = _.map([].concat(sampleSchedule.on), function (a) {
-      var results = {};
-      while (a && a.at) {
-        results[a.period] = a.at;
-        a = a.on;
-      }
-      return results;
-    });
-
-    var instances = _.map(_.range(instanceCount), function (i) {
-      var instanceValues = scheduleValues[i] || {};
-      var periods = _.map(requiredPeriods, function (p) {
-        var value = tmpl.dict.get(i + "." + p) || instanceValues[p];
-        var options = periodDef && periodDef[p + "Options"] || defaults[p + "Options"];
-        return {
-          value: value
-          , period: p
-          , options: options
-        };
-      });
+    return _.map(instances, function (a, i) {
       return {
-        requiredPeriods: periods
+        requiredPeriods: _.map(a, function (val, p) {
+          return {
+            value: val
+            , period: p
+            , options: periodDef && periodDef[p + "Options"] || defaults[p + "Options"]
+          };
+        })
         , index: i
       };
     });
+    // if (!sampleSchedule)
+    //   return;
+    // if (!sampleSchedule.on)
+    //   return;
+    // instanceCount = _.isArray(sampleSchedule.on) ? sampleSchedule.on.length : 1;
 
-    return instances;
+    // var requiredPeriods = [];
+    // var currentSchedule = sampleSchedule;
+    // while (true) {
+    //   if (currentSchedule && currentSchedule.on) {
+    //     currentSchedule = currentSchedule.on;
+    //   } else
+    //     break;
+    //   if (currentSchedule[0]) {
+    //     currentSchedule = currentSchedule[0];
+    //   }
+    //   if (currentSchedule.period) {
+    //     requiredPeriods.push(currentSchedule.period);
+    //   }
+    // }
+
+    // var scheduleValues = _.map([].concat(sampleSchedule.on), function (a) {
+    //   var results = {};
+    //   while (a && a.at) {
+    //     results[a.period] = a.at;
+    //     a = a.on;
+    //   }
+    //   return results;
+    // });
+
+    // var instances = _.map(_.range(instanceCount), function (i) {
+    //   var instanceValues = scheduleValues[i] || {};
+    //   var periods = _.map(requiredPeriods, function (p) {
+    //     var value = tmpl.dict.get(i + "." + p) || instanceValues[p];
+    //     var options = periodDef && periodDef[p + "Options"] || defaults[p + "Options"];
+    //     return {
+    //       value: value
+    //       , period: p
+    //       , options: options
+    //     };
+    //   });
+    //   return {
+    //     requiredPeriods: periods
+    //     , index: i
+    //   };
+    // });
+
+    // return instances;
+  }
+  , schedule: function () {
+
   }
 });
 
