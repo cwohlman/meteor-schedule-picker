@@ -10,15 +10,19 @@ Recur.defaultShortcuts = {
   , bedtime: 60 * 23
 };
 
+function getIntervalDescription (period, i, onlyParticle) {
+  var number = i === 1 ? "" : (i + '');
+  var periodWithPlural = i === 1 ? period : period + 's';
+  return _.filter([onlyParticle ? "every" : "Every", number, periodWithPlural], _.identity).join(" ");  
+}
+
 function getIntervals (period, count) {
   if (!period)
     return [];
   
   return _.map(_.range(1, count + 1), function (i) {
-    var number = i === 1 ? "" : (i + '');
-    var periodWithPlural = i === 1 ? period : period + 's';
     return {
-      label: ["Every", number, periodWithPlural].join(" ")
+      label: getIntervalDescription(period, i)
       , value: i
     };
   });
@@ -47,20 +51,23 @@ function chooseParticle (word) {
   }[word] || 'a';
 }
 
+function getFrequencyDescription (period, i, onlyParticle) {
+  var name = i + " times";
+  var particle = chooseParticle(period);
+  if (i === 1)
+    name = "Once";
+  else if (i === 2)
+    name = "Twice";
+  return onlyParticle ? name : [name, particle, period].join(" ");
+}
+
 function getFrequencies (period, count) {
   if (!period)
     return [];
 
-  var particle = chooseParticle(period);
-
   return _.map(_.range(1, count + 1), function (i) {
-    var name = i + " times";
-    if (i === 1)
-      name = "Once";
-    else if (i === 2)
-      name = "Twice";
     return {
-      label: [name, particle, period].join(" ")
+      label: getFrequencyDescription(period, i)
       , value: i
     };
   });
@@ -89,6 +96,7 @@ function getOptions (period, constructorFn) {
       }
       , update: function (schedule, value) {
         schedule.interval = value;
+        schedule.description = getComboDescription(period, schedule.interval, schedule.on.length);
         return schedule;
       }
     }
@@ -105,6 +113,7 @@ function getOptions (period, constructorFn) {
         var instances = schedule.on;
         instances = getInstances(instances, value, constructorFn);
         schedule.on = instances;
+        schedule.description = getComboDescription(period, schedule.interval, schedule.on.length);
         return schedule;
       }
     }
@@ -162,6 +171,20 @@ function makeMonthDaysOption(instance) {
       return schedule;
     }
   };
+}
+
+function getHourlyDescription(i) {
+  var number = i === 1 ? "" : (i + '');
+  var periodWithPlural = i === 1 ? 'hour' : 'hours';
+  return ["Every", number, periodWithPlural].join(" ");
+}
+
+function getComboDescription(period, interval, instanceCount) {
+  if (instanceCount === 1)
+    return getIntervalDescription(period, interval);
+  if (interval === 1)
+    return getFrequencyDescription(period, instanceCount);
+  return getFrequencyDescription(period, instanceCount, true) + " " + getIntervalDescription(period, interval, true);
 }
 
 var minuteOptions = _.flatten([
@@ -233,6 +256,7 @@ var options = [
           period: 'minute'
           , at: 18 * 60
         }]
+        , description: getHourlyDescription(6)
       };
     }
     , getOptions: function () {
@@ -244,10 +268,8 @@ var options = [
         }
         , options: function (schedule) {
           return _.map([1,2,4,6,8,12], function (i)  {
-            var number = i === 1 ? "" : (i + '');
-            var periodWithPlural = i === 1 ? 'hour' : 'hours';
             return {
-              label: ["Every", number, periodWithPlural].join(" ")
+              label: getHourlyDescription(i)
               , value: i
             };
           });
@@ -261,6 +283,7 @@ var options = [
             };
           });
           schedule.on = instances;
+          schedule.description = getHourlyDescription(Number(value));
           return schedule;
         }
       }];
@@ -290,6 +313,7 @@ var options = [
           period: 'minute'
           , at: 'morning'
         }]
+        , description: getComboDescription('day', 1, 1)
       };
     }
     , getOptions: function () {
@@ -323,6 +347,7 @@ var options = [
               , at: 'morning'
             }
         }]
+        , description: getComboDescription('week', 1, 1)
       };
     }
     , getOptions: function () {
@@ -363,6 +388,7 @@ var options = [
               , at: 'morning'
             }
         }]
+        , description: getComboDescription('month', 1, 1)
       };
     }
     , getOptions: function () {
@@ -407,6 +433,7 @@ function makeDailyShortcut (args) {
             , at:  time
           };
         })
+        , description: label
       };
     }
   };
