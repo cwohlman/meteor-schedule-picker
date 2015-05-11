@@ -24,26 +24,26 @@ Recur.defaultShortcuts = {
 
 var shortcutNames = {
   wakup: "Wakeup"
-  , "breakfast-30": "30 minutes before breakfast"
-  , "breakfast-15": "15 minute before breakfast"
-  , breakfast: "breakfast"
-  , "breakfast+15": "15 minutes after breakfast"
-  , "breakfast+30": "30 minutes after breakfast"
-  , morning: "morning"
-  , "lunch-30": "30 minutes before lunch"
-  , "lunch-15": "15 minute before lunch"
-  , lunch: "lunch"
-  , "lunch+15": "15 minutes after lunch"
-  , "lunch+30": "30 minutes after lunch"
-  , afternoon: "afternoon"
-  , lateAfternoon: "late afternoon"
-  , "supper-30": "30 minutes before supper"
-  , "supper-15": "15 minute before supper"
-  , supper: "supper"
-  , "supper+15": "15 minutes after supper"
-  , "supper+30": "30 minutes after supper"
-  , evening: "evening"
-  , bedtime: "bedtime"
+  , "breakfast-30": "30 minutes before Breakfast"
+  , "breakfast-15": "15 minute before Breakfast"
+  , breakfast: "Breakfast"
+  , "breakfast+15": "15 minutes after Breakfast"
+  , "breakfast+30": "30 minutes after Breakfast"
+  , morning: "Morning"
+  , "lunch-30": "30 minutes before Lunch"
+  , "lunch-15": "15 minute before Lunch"
+  , lunch: "Lunch"
+  , "lunch+15": "15 minutes after Lunch"
+  , "lunch+30": "30 minutes after Lunch"
+  , afternoon: "Afternoon"
+  , lateAfternoon: "Late Afternoon"
+  , "supper-30": "30 minutes before Supper"
+  , "supper-15": "15 minute before Supper"
+  , supper: "Supper"
+  , "supper+15": "15 minutes after Supper"
+  , "supper+30": "30 minutes after Supper"
+  , evening: "Evening"
+  , bedtime: "Bedtime"
 };
 
 function getIntervalDescription (period, i, onlyParticle) {
@@ -607,11 +607,42 @@ var scheduleShortcuts = [
       , ['daily', 'hs', 'Bedtime', 'bedtime']
     ], makeDailyShortcut)
   }
-  // , 
-      // , ['daily', 'bid', 'Twice Daily', 'morning', 'evening']
-      // , ['daily', 'tid', 'Three Times Daily', 'morning', 16 * 60, 'evening']
-      // , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
-      // , ['daily', 'qid', 'Four Times Daily', 'morning', 14 * 60, 18 * 60, 'evening']
+  , {
+    label: "Twice Daily"
+    , options: _.map([
+      ['daily', 'bid', 'Twice Daily', 'morning', 'evening']
+      , ['daily', 'am&hs', 'Morning and Bedtime', 'wakeup', 'bedtime']
+      , ['daily', 'bidwm', 'Twice Daily with Meals', 'breakfast', 'supper']
+      , ['daily', 'bidac', 'Twice Daily before Meals', 'breakfast-30', 'supper-30']
+      , ['daily', 'bidpc', 'Twice Daily after Meals', 'breakfast+30', 'supper+30']
+      , ['daily', 'insulin', 'Twice Daily for Insulin', 'breakfast-30', 'supper-30']
+    ], makeDailyShortcut)
+  }
+  , {
+    label: "Three Times Daily"
+    , options: _.map([
+      ['daily', 'tid', 'Three Times per Day', 'morning', 60 * (12 + 4), 'evening']
+      , ['daily', 'wm', 'With Meals', 'breakfast', 'lunch', 'supper']
+      , ['daily', 'ac', 'Before Meals', 'breakfast-30', 'lunch-30', 'supper-30']
+      , ['daily', 'pc', 'After Meals', 'breakfast+30', 'lunch+30', 'supper+30']
+    ], makeDailyShortcut)
+  }
+  , {
+    label: "Four Times Daily"
+    , options: _.map([
+      ['daily', 'qid', 'Four Times per Day', 'morning', 60 * (12 + 2), 60 * (12 + 6), 'evening']
+      , ['daily', 'wm&hs', 'With Meals and Bedtime', 'breakfast', 'lunch', 'supper', 'bedtime']
+      , ['daily', 'ac&hs', '15 Minutes Before Meals and Bedtime', 'breakfast-15', 'lunch-15', 'supper-15', 'bedtime']
+      , ['daily', 'ac&hs', '30 Minutes Before Meals and Bedtime', 'breakfast-30', 'lunch-30', 'supper-30', 'bedtime']
+      , ['daily', 'pc&hs', '30 Minutes After Meals and Bedtime', 'breakfast+30', 'lunch+30', 'supper+30', 'bedtime']
+    ], makeDailyShortcut)
+  }
+  , {
+    label: "Five Times Daily"
+    , options: _.map([
+      ['daily', 'five', 'Five Times per Day', 60 * 6, 60 * 10, 60 * (12 + 2), 60 * (12 + 6), 60 * (12 + 10)]
+    ], makeDailyShortcut)
+  }
   , {
     label: 'Custom'
     , options: [{
