@@ -848,12 +848,24 @@ Template.schedulePicker.events({
       value = Number(value);
     if (name === "period") {
       var selectedOption = _.findWhere(options, {name: value});
-      if (selectedOption)
-        tmpl.schedule.set(selectedOption.createSchedule());
+      if (selectedOption) {
+        var existingSchedule = tmpl.schedule.get();
+        var newSchedule = selectedOption.createSchedule(existingSchedule);
+        if (existingSchedule.between && !newSchedule.between) {
+          newSchedule.between = existingSchedule.between;
+        }
+        tmpl.schedule.set(newSchedule);
+      }
     } else if (name === 'shortcut') {
       var selectedShortcut = findShortcut(value);
-      if (selectedShortcut)
-        tmpl.schedule.set(selectedShortcut.createSchedule());
+      if (selectedShortcut) {
+        var existingSchedule = tmpl.schedule.get();
+        var newSchedule = selectedShortcut.createSchedule(existingSchedule);
+        if (existingSchedule.between && !newSchedule.between) {
+          newSchedule.between = existingSchedule.between;
+        }
+        tmpl.schedule.set(newSchedule);
+      }
 
     } else {
       var schedule = tmpl.schedule.get();
