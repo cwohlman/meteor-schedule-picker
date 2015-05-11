@@ -173,11 +173,12 @@ var weekDayConstructor = makeConstructorFn('day', 1, 7);
 var monthDayConstructor = makeConstructorFn('day', 1, 28);
 
 function makeMinutesOption(instance) {
+  var shortcuts = this.customTimes || Recur.defaultShortcuts;
   return {
     label: 'Time'
     , name: 'minute'
     , value: instance.at
-    , options: minuteOptions
+    , options: minuteOptions(shortcuts)
     , update: function (schedule, value) {
       instance.at = value;
       return schedule;
@@ -225,21 +226,23 @@ function getComboDescription(period, interval, instanceCount) {
   return getFrequencyDescription(period, instanceCount, true) + " " + getIntervalDescription(period, interval, true);
 }
 
-var minuteOptions = _.flatten([
-  _.map(Recur.defaultShortcuts, function (val, name) {
-    return {
-      label: moment().startOf('day').add(val, 'minutes').format('hh:mm a') + ' (' + shortcutNames[name] + ')'
-      , value: name
-    };
-  })
-  , _.map(_.range(24 * 4), function (i) {
-    var minutes = i * 15;
-    return {
-      label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
-      , value: minutes
-    };
-  })
-]);
+function minuteOptions(shortcuts) {
+  return _.flatten([
+    _.map(shortcuts, function (val, name) {
+      return {
+        label: moment().startOf('day').add(val, 'minutes').format('hh:mm a') + ' (' + shortcutNames[name] + ')'
+        , value: name
+      };
+    })
+    , _.map(_.range(24 * 4), function (i) {
+      var minutes = i * 15;
+      return {
+        label: moment().startOf('day').add(minutes, 'minutes').format('hh:mm a')
+        , value: minutes
+      };
+    })
+  ]);
+}
 
 var weekDayOptions = _.map([
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
@@ -375,10 +378,10 @@ var options = [
     , getInstances: function (schedule) {
       return schedule.on;
     }
-    , getInstanceOptions: function (instance) {
+    , getInstanceOptions: function (instance, self) {
       // XXX since this is hourly, we should really update all of the other
       // instances to match the specified hourly distance.
-      return [makeMinutesOption(instance)];
+      return [makeMinutesOption.call(self, instance)];
     }
     , getDates: rangeDates
   }
@@ -407,8 +410,8 @@ var options = [
     , getInstances: function (schedule) {
       return schedule.on;
     }
-    , getInstanceOptions: function (instance) {
-      return [makeMinutesOption(instance)];
+    , getInstanceOptions: function (instance, self) {
+      return [makeMinutesOption.call(self, instance)];
     }
     , getDates: rangeDates
   }
@@ -449,8 +452,8 @@ var options = [
     , getInstances: function (schedule) {
       return schedule.on;
     }
-    , getInstanceOptions: function (instance) {
-      return instance && instance.on && [makeWeekDaysOption(instance), makeMinutesOption(instance.on)];
+    , getInstanceOptions: function (instance, self) {
+      return instance && instance.on && [makeWeekDaysOption(instance), makeMinutesOption.call.this, call(this, instance.on)];
     }
     , getDates: rangeDates
   }
@@ -491,8 +494,8 @@ var options = [
     , getInstances: function (schedule) {
       return schedule.on;
     }
-    , getInstanceOptions: function (instance) {
-      return instance && instance.on && [makeMonthDaysOption(instance), makeMinutesOption(instance.on)];
+    , getInstanceOptions: function (instance, self) {
+      return instance && instance.on && [makeMonthDaysOption(instance), makeMinutesOption.call(self, instance.on)];
     }
     , getDates: rangeDates
   }
@@ -523,8 +526,8 @@ var options = [
     , getInstances: function (schedule) {
       return schedule.on;
     }
-    , getInstanceOptions: function (instance) {
-      return [makeMinutesOption(instance)];
+    , getInstanceOptions: function (instance, self) {
+      return [makeMinutesOption.call(self, instance)];
     }
     , getDates: function () {
       return [{
@@ -806,7 +809,7 @@ Template.schedulePicker.helpers({
     var tmpl = Template.instance();
     var period = tmpl.selectedOption.get();
     var schedule = tmpl.schedule.get();
-    return period && schedule && period.getInstanceOptions(this);
+    return period && schedule && period.getInstanceOptions(this, tmpl.data);
   }
   , selected: function () {
     // check whether this.value matches ../value
