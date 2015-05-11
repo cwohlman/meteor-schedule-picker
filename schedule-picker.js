@@ -576,6 +576,43 @@ function makeDailyShortcut (args) {
   };
 }
 
+function makeWeeklyShortcut (args) {
+  var kind = args.shift();
+  var name = args.shift();
+  var label = args.shift();
+  var interval = args.shift();
+  var times = args;
+  return {
+    label: label + " (" + name.toUpperCase() + ")"
+    , name: name
+    , value: name
+    , matches: function (schedule) {
+      return schedule.shortcutKind === name;
+    }
+    , createSchedule: function () {
+      return {
+        kind: kind
+        , shortcutKind: name
+        , period: kind === 'weekly' ? 'week' : 'month'
+        , interval: interval
+        , on: _.map(times, function (time) {
+          var date = time[0];
+          time = time[1];
+          return {
+            period: 'day'
+            , at: date
+            , on: {
+              period: 'minute'
+              , at:  time
+            }
+          };
+        })
+        , description: label
+      };
+    }
+  };
+}
+
 function findShortcut(scheduleOrName) {
   var predicate = _.isString(scheduleOrName) ?
     function (o) {
@@ -651,6 +688,24 @@ var scheduleShortcuts = [
     , options: _.map([
       ['daily', 'five', 'Five Times per Day', 60 * 6, 60 * 10, 60 * (12 + 2), 60 * (12 + 6), 60 * (12 + 10)]
     ], makeDailyShortcut)
+  }
+  , {
+    label: "Weekly"
+    , options: _.map([
+      ['weekly', 'qwk', 'Every Week', 1, [1, 'morning']]
+      , ['weekly', 'biw', 'Every Other Week', 2, [1, 'morning']]
+      , ['weekly', 'tiw', 'Every Third Week', 3, [1, 'morning']]
+      , ['weekly', 'q2wk', 'Twice per Week', 1, [1, 'morning'], [4, 'morning']]
+      , ['weekly', 'q3wk', 'Thrice per Week', 1, [1, 'morning'], [3, 'morning'], [5, 'morning']]
+      , ['weekly', 'q3-4wk', 'Four Times per Week', 1, [1, 'morning'], [2, 'morning'], [4, 'morning'], [6, 'morning']]
+    ], makeWeeklyShortcut)
+  }
+  , {
+    label: "Monthly"
+    , options: _.map([
+      ['monthly', 'q1mo', 'Every Month', 1, [0, 'morning']]
+      , ['monthly', 'q6mo', 'Every 6 Months', 6, [0, 'morning']]
+    ], makeWeeklyShortcut)
   }
   , {
     label: 'Custom'
