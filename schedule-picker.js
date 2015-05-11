@@ -275,11 +275,12 @@ var rangeDates = function () {
         return start ? moment(start).format('M/D/YYYY') : '';
       }
       , update: function (schedule, value) {
-        value = moment(value, 'M/D/YYYY', true);
+        value = moment(value, 'M/D/YYYY', true).startOf('day');
         schedule.between = schedule.between || [null, null];
 
         if (value.isValid()) {
           schedule.between[0] = value.toDate();
+          schedule.offset = value.toDate();
         } else {
           schedule.between[0] = null;
         }
@@ -299,7 +300,7 @@ var rangeDates = function () {
         schedule.between = schedule.between || [null, null];
 
         if (value.isValid()) {
-          schedule.between[1] = value.endOf('day').toDate();
+          schedule.between[1] = value.clone().endOf('day').toDate();
         } else {
           schedule.between[1] = null;
         }
