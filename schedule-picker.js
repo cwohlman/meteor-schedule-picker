@@ -46,6 +46,8 @@ var shortcutNames = {
   , bedtime: "Bedtime"
 };
 
+var datePickerFormat = "YYYY-MM-DD";
+
 function getIntervalDescription (period, i, onlyParticle) {
   var number = i === 1 ? "" : (i + '');
   var periodWithPlural = i === 1 ? period : period + 's';
@@ -272,10 +274,10 @@ var rangeDates = function () {
       , name: 'start'
       , value: function (schedule) {
         var start = schedule && schedule.between && schedule.between[0];
-        return start ? moment(start).format('M/D/YYYY') : '';
+        return start ? moment(start).format(datePickerFormat) : '';
       }
       , update: function (schedule, value) {
-        value = moment(value, 'M/D/YYYY', true).startOf('day');
+        value = moment(value, datePickerFormat, false).startOf('day');
         schedule.between = schedule.between || [null, null];
 
         if (value.isValid()) {
@@ -293,10 +295,10 @@ var rangeDates = function () {
       , name: 'end'
       , value: function (schedule) {
         var end = schedule && schedule.between && schedule.between[1];
-        return end ? moment(end).format('M/D/YYYY') : '';
+        return end ? moment(end).format(datePickerFormat) : '';
       }
       , update: function (schedule, value) {
-        value = moment(value, 'M/D/YYYY', true);
+        value = moment(value, datePickerFormat, false);
         schedule.between = schedule.between || [null, null];
 
         if (value.isValid()) {
@@ -530,10 +532,10 @@ var options = [
         , name: 'date'
         , value: function (schedule) {
           var date = schedule && schedule.between && schedule.between[0];
-          return date ? moment(date).format('M/D/YYYY') : '';
+          return date ? moment(date).format(datePickerFormat) : '';
         }
         , update: function (schedule, value) {
-          value = moment(value, 'M/D/YYYY', true);
+          value = moment(value, datePickerFormat, true);
 
           if (value.isValid()) {
             schedule.between = [value.clone().startOf('day').toDate(), value.clone().endOf('day').toDate()];
