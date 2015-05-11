@@ -14,20 +14,22 @@
         {{/each}}
       </select>
     </div>
-    <div class="{{inputWrapperClass}}">
-      <select name="period" class="{{inputClass}}">
-        {{#each scheduleKinds}}
-          <option value="{{value}}" selected="{{selectedPeriod}}">
-            {{label}}
-          </option>
-        {{/each}}
-      </select>
-    </div>
+    {{#if custom}}
+      <div class="{{inputWrapperClass}}">
+        <select name="period" class="{{inputClass}}">
+          {{#each scheduleKinds}}
+            <option value="{{value}}" selected="{{selectedPeriod}}">
+              {{label}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
+    {{/if}}
   </div>
   <div class="scheduleOptions {{wrapperClass}}">
     {{#each scheduleOptions}}
       <div class="{{../inputWrapperClass}}">
-        <select class="{{../inputClass}}">
+        <select class="{{../inputClass}}" disabled="{{notCustom}}">
           {{#each options}}
             <option value="{{value}}" selected="{{selected}}">
               {{label}}

@@ -469,11 +469,12 @@ function makeDailyShortcut (args) {
     , name: name
     , value: name
     , matches: function (schedule) {
-      return schedule.kind === kind && _.isEqual(_.pluck(schedule.on, 'at'), times);
+      return schedule.shortcutKind === name;
     }
     , createSchedule: function () {
       return {
         kind: kind
+        , shortcutKind: name
         , period: 'day'
         , interval: 1
         , on: _.map(times, function (time) {
@@ -611,6 +612,16 @@ Template.schedulePicker.helpers({
     }
 
     return value == this.value;
+  }
+  , custom: function () {
+    var tmpl = Template.instance();
+    var shortcut = tmpl.selectedShortcut.get();
+    return shortcut && shortcut.name === 'custom';
+  }
+  , notCustom: function () {
+    var tmpl = Template.instance();
+    var shortcut = tmpl.selectedShortcut.get();
+    return shortcut && shortcut.name !== 'custom';
   }
   , schedule: function () {
     var tmpl = Template.instance();
