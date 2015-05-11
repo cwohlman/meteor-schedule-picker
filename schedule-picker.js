@@ -548,7 +548,7 @@ Template.schedulePicker.onCreated(function () {
   tmpl.autorun(function () {
     var data = Template.currentData();
 
-    tmpl.schedule.set(data.value || options[1].createSchedule());
+    tmpl.schedule.set(data.value || scheduleShortcuts[0].options[0].createSchedule());
   });
   tmpl.autorun(function () {
     var schedule = tmpl.schedule.get();
