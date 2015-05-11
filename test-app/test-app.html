@@ -7,6 +7,8 @@
 </body>
 
 <template name="hello">
-  <h1>Schedule Picker</h1> 
-  {{> schedulePicker name="schedule" options=options}}
+  <div class="container">
+    <h1>Schedule Picker</h1>
+    {{> schedulePicker inputClass="form-control" inputWrapperClass="form-group" name="schedule" options=options}}    
+  </div>
 </template>
