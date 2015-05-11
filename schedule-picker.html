@@ -45,7 +45,9 @@
     {{#each scheduleDates}}
       <div class="{{../inputWrapperClass}}">
         <label>{{label}}</label>
-        <input type="text" class="{{../inputClass}} datepicker" value="{{value schedule}}" placeholder="{{label}}">
+        {{#schedulePicker_datePicker}}
+          <input type="text" class="{{../inputClass}} datepicker" value="{{value schedule}}" placeholder="{{label}}">
+        {{/schedulePicker_datePicker}}
       </div>
     {{/each}}
   </div>
@@ -69,4 +71,8 @@
   </div>
   <input name="{{name}}" type="hidden" value="{{print schedule}}">
   {{#if debug}}<pre>{{print schedule}}</pre>{{/if}}
+</template>
+
+<template name="schedulePicker_datePicker">
+  {{> UI.contentBlock}}
 </template>
