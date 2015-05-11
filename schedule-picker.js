@@ -457,6 +457,57 @@ var options = [
     }
     , getDates: rangeDates
   }
+  , {
+    label: 'Once'
+    , name: 'once'
+    , value: 'once'
+    , matches: function (schedule) {
+      return schedule.kind === 'once';
+    }
+    , createSchedule: function () {
+      return {
+        period: 'day'
+        , kind: 'once'
+        , interval: 1
+        , between: [moment().startOf('day').toDate(), moment().endOf('day').toDate()]
+        , on: [{
+          period: 'minute'
+          , at: 'morning'
+        }]
+        , description: "Once"
+      };
+    }
+    , getOptions: function () {
+      return [];
+    }
+    , getInstances: function (schedule) {
+      return schedule.on;
+    }
+    , getInstanceOptions: function (instance) {
+      return [makeMinutesOption(instance)];
+    }
+    , getDates: function () {
+      return [{
+        label: 'Date'
+        , name: 'date'
+        , value: function (schedule) {
+          var date = schedule && schedule.between && schedule.between[0];
+          return date ? moment(date).format('M/D/YYYY') : '';
+        }
+        , update: function (schedule, value) {
+          value = moment(value, 'M/D/YYYY', true);
+
+          if (value.isValid()) {
+            schedule.between = [value.clone().startOf('day').toDate(), value.clone().endOf('day').toDate()];
+          } else {
+            schedule.between = null;
+          }
+
+          return schedule;
+        }
+      }];
+    }
+  }
 ];
 
 function makeDailyShortcut (args) {
