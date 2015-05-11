@@ -46,7 +46,7 @@ var shortcutNames = {
   , bedtime: "Bedtime"
 };
 
-var datePickerFormat = "YYYY-MM-DD";
+var datePickerFormat = "MM/DD/YYYY";
 
 function getIntervalDescription (period, i, onlyParticle) {
   var number = i === 1 ? "" : (i + '');
