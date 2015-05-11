@@ -1,13 +1,49 @@
 Recur.defaultShortcuts = {
   wakup: 60 * 7
+  , "breakfast-30": 60 * 8 - 30
+  , "breakfast-15": 60 * 8 - 15
   , breakfast: 60 * 8
+  // , "breakfast+15": 60 * 8 + 15
+  , "breakfast+30": 60 * 8 + 30
   , morning: 60 * 10
+  , "lunch-30": 60 * 12 - 30
+  , "lunch-15": 60 * 12 - 15
   , lunch: 60 * 12
+  // , "lunch+15": 60 * 12 + 15
+  , "lunch+30": 60 * 12 + 30
   , afternoon: 60 * 14
   , lateAfternoon: 60 * 17
+  , "supper-30": 60 * 20 - 30
+  , "supper-15": 60 * 20 - 15
   , supper: 60 * 20
+  // , "supper+15": 60 * 20 + 15
+  , "supper+30": 60 * 20 + 30
   , evening: 60 * 22
   , bedtime: 60 * 23
+};
+
+var shortcutNames = {
+  wakup: "Wakeup"
+  , "breakfast-30": "30 minutes before breakfast"
+  , "breakfast-15": "15 minute before breakfast"
+  , breakfast: "breakfast"
+  , "breakfast+15": "15 minutes after breakfast"
+  , "breakfast+30": "30 minutes after breakfast"
+  , morning: "morning"
+  , "lunch-30": "30 minutes before lunch"
+  , "lunch-15": "15 minute before lunch"
+  , lunch: "lunch"
+  , "lunch+15": "15 minutes after lunch"
+  , "lunch+30": "30 minutes after lunch"
+  , afternoon: "afternoon"
+  , lateAfternoon: "late afternoon"
+  , "supper-30": "30 minutes before supper"
+  , "supper-15": "15 minute before supper"
+  , supper: "supper"
+  , "supper+15": "15 minutes after supper"
+  , "supper+30": "30 minutes after supper"
+  , evening: "evening"
+  , bedtime: "bedtime"
 };
 
 function getIntervalDescription (period, i, onlyParticle) {
@@ -190,7 +226,7 @@ function getComboDescription(period, interval, instanceCount) {
 var minuteOptions = _.flatten([
   _.map(Recur.defaultShortcuts, function (val, name) {
     return {
-      label: moment().startOf('day').add(val, 'minutes').format('hh:mm a') + ' (' + name + ')'
+      label: moment().startOf('day').add(val, 'minutes').format('hh:mm a') + ' (' + shortcutNames[name] + ')'
       , value: name
     };
   })
@@ -558,15 +594,24 @@ function findShortcut(scheduleOrName) {
 
 var scheduleShortcuts = [
   {
-    label: "Daily"
+    label: "Once Daily"
     , options: _.map([
-      ['daily', 'qd', 'Once Daily', 'morning']
-      , ['daily', 'bid', 'Twice Daily', 'morning', 'evening']
-      , ['daily', 'tid', 'Three Times Daily', 'morning', 16 * 60, 'evening']
-      , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
-      , ['daily', 'qid', 'Four Times Daily', 'morning', 14 * 60, 18 * 60, 'evening']
+      ['daily', 'daily', 'Every Day', 'morning']
+      , ['daily', 'qam', 'Every Morning', 'morning']
+      , ['daily', 'wbr', 'Daily With Breakfast', 'breakfast']
+      , ['daily', '30br', '30 Minutes Before Breakfast', 'breakfast-30']
+      , ['daily', 'wsup', 'With Supper', 'supper']
+      , ['daily', '30sup', '30 Minutes Before Supper', 'supper-30']
+      , ['daily', 'psup', '30 Minutes After Supper', 'supper+30']
+      , ['daily', 'pm', 'Daily in the evening', 'evening']
+      , ['daily', 'hs', 'Bedtime', 'bedtime']
     ], makeDailyShortcut)
   }
+  // , 
+      // , ['daily', 'bid', 'Twice Daily', 'morning', 'evening']
+      // , ['daily', 'tid', 'Three Times Daily', 'morning', 16 * 60, 'evening']
+      // , ['daily', 'meals', 'With Meals', 8 * 60, 12 * 60, 20 * 60]
+      // , ['daily', 'qid', 'Four Times Daily', 'morning', 14 * 60, 18 * 60, 'evening']
   , {
     label: 'Custom'
     , options: [{
