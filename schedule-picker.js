@@ -22,7 +22,7 @@ Recur.defaultShortcuts = {
   , bedtime: 60 * 23
 };
 
-var shortcutNames = {
+var shortcutNames = Recur.shortcutNames = {
   wakup: "Wakeup"
   , "breakfast-30": "30 minutes before Breakfast"
   , "breakfast-15": "15 minute before Breakfast"
