@@ -552,7 +552,7 @@ function makeDailyShortcut (args) {
   var label = args.shift();
   var times = args;
   return {
-    label: "(" +name.toUpperCase() + ") " + label 
+    label: label + " (" + name.toUpperCase() + ")"
     , name: name
     , value: name
     , matches: function (schedule) {
@@ -594,6 +594,15 @@ function findShortcut(scheduleOrName) {
 
 var scheduleShortcuts = [
   {
+    label: "Hourly"
+    , options: _.map([
+      ['hourly', 'q4h', 'Every Four Hours', 60 * 6, 60 * 10, 60 * (12 + 2), 60 * (12 + 6), 60 * (12 + 10)]
+      , ['hourly', 'q6h', 'Every Six Hours', 60 * 6, 60 * 12, 60 * (12 + 6), 0]
+      , ['hourly', 'q8h', 'Every Eight Hours', 60 * 6, 60 * (12 + 2), 60 * (12 + 10)]
+      , ['hourly', 'q12h', 'Every Twelve Hours', 60 * 10, 60 * (12 + 10)]
+    ], makeDailyShortcut)
+  }
+  , {
     label: "Once Daily"
     , options: _.map([
       ['daily', 'daily', 'Every Day', 'morning']
