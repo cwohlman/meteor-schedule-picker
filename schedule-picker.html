@@ -1,4 +1,5 @@
 <template name="schedulePicker">
+  <label>Frequency</label>
   <div class="schedulePicker {{wrapperClass}}">
     <div class="{{inputWrapperClass}}">
       <select name="shortcut" class="{{inputClass}}">
@@ -44,8 +45,8 @@
       </div>
     {{/each}}
   </div>
+  <label>Times</label>
   <div class="scheduleInstances {{wrapperClass}}">
-    <label>Times</label>
     {{#each scheduleInstances}}
       <div class="scheduleInstance">
         {{#each instanceOptions}}
