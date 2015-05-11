@@ -1,6 +1,6 @@
 Package.describe({
   name: 'cwohlman:schedule-picker',
-  version: "0.3.0",
+  version: "0.3.1",
   // Brief, one-line summary of the package.
   summary: 'Allow users to pick a schedule for some recurring event.',
   // URL to the Git repository containing the source code for this package.
