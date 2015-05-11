@@ -34,10 +34,18 @@
           {{/each}}
         </select>        
       </div>
-
+    {{/each}}
+  </div>
+  <div class="scheduleDates {{wrapperClass}}">
+    {{#each scheduleDates}}
+      <div class="{{../inputWrapperClass}}">
+        <label>{{label}}</label>
+        <input type="text" class="{{../inputClass}}" value="{{value schedule}}" placeholder="{{label}}">
+      </div>
     {{/each}}
   </div>
   <div class="scheduleInstances {{wrapperClass}}">
+    <label>Times</label>
     {{#each scheduleInstances}}
       <div class="scheduleInstance">
         {{#each instanceOptions}}

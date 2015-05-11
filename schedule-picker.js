@@ -229,6 +229,51 @@ var hours = {
   , 12: _.range(10, 24, 12)
 };
 
+var rangeDates = function () {
+  return [
+    {
+      label: 'Start Date'
+      , name: 'start'
+      , value: function (schedule) {
+        var start = schedule && schedule.between && schedule.between[0];
+        return start ? moment(start).format('M/D/YYYY') : '';
+      }
+      , update: function (schedule, value) {
+        value = moment(value, 'M/D/YYYY', true);
+        schedule.between = schedule.between || [null, null];
+
+        if (value.isValid()) {
+          schedule.between[0] = value.toDate();
+        } else {
+          schedule.between[0] = null;
+        }
+
+        return schedule;
+      }
+    }
+    , {
+      label: 'End Date'
+      , name: 'end'
+      , value: function (schedule) {
+        var end = schedule && schedule.between && schedule.between[1];
+        return end ? moment(end).format('M/D/YYYY') : '';
+      }
+      , update: function (schedule, value) {
+        value = moment(value, 'M/D/YYYY', true);
+        schedule.between = schedule.between || [null, null];
+
+        if (value.isValid()) {
+          schedule.between[1] = value.endOf('day').toDate();
+        } else {
+          schedule.between[1] = null;
+        }
+
+        return schedule;
+      }
+    }
+  ];
+};
+
 var options = [
   {
     label: 'Hourly'
@@ -296,6 +341,7 @@ var options = [
       // instances to match the specified hourly distance.
       return [makeMinutesOption(instance)];
     }
+    , getDates: rangeDates
   }
   , {
     label: 'Daily'
@@ -325,6 +371,7 @@ var options = [
     , getInstanceOptions: function (instance) {
       return [makeMinutesOption(instance)];
     }
+    , getDates: rangeDates
   }
   , {
     label: 'Weekly'
@@ -366,6 +413,7 @@ var options = [
     , getInstanceOptions: function (instance) {
       return instance && instance.on && [makeWeekDaysOption(instance), makeMinutesOption(instance.on)];
     }
+    , getDates: rangeDates
   }
   , {
     label: 'Monthly'
@@ -407,6 +455,7 @@ var options = [
     , getInstanceOptions: function (instance) {
       return instance && instance.on && [makeMonthDaysOption(instance), makeMinutesOption(instance.on)];
     }
+    , getDates: rangeDates
   }
 ];
 
@@ -540,6 +589,11 @@ Template.schedulePicker.helpers({
     var schedule = tmpl.schedule.get();
     return period && schedule && period.getInstances(schedule);
   }
+  , scheduleDates: function () {
+    var tmpl = Template.instance();
+    var period = tmpl.selectedOption.get();
+    return period && period.getDates();
+  }
   , instanceOptions: function () {
     var tmpl = Template.instance();
     var period = tmpl.selectedOption.get();
@@ -569,7 +623,7 @@ Template.schedulePicker.helpers({
 });
 
 Template.schedulePicker.events({
-  'change select': function (e, tmpl) {
+  'change select, change input': function (e, tmpl) {
     var name = e.currentTarget.name;
     var value = e.currentTarget.value;
     if (_.isFinite(value))
