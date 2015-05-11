@@ -505,6 +505,7 @@ var options = [
       return {
         period: 'day'
         , kind: 'once'
+        , shortcutKind: 'once'
         , interval: 1
         , between: [moment().startOf('day').toDate(), moment().endOf('day').toDate()]
         , on: [{
@@ -632,6 +633,18 @@ function findShortcut(scheduleOrName) {
 
 var scheduleShortcuts = [
   {
+    label: "Once"
+    , options: [{
+      label: 'Once'
+      , name: 'once'
+      , value: 'once'
+      , matches: function (schedule) {
+        return schedule.shortcutKind === 'once';
+      }
+      , createSchedule: _.findWhere(options, {name: 'once'}).createSchedule
+    }]
+  }
+  , {
     label: "Hourly"
     , options: _.map([
       ['hourly', 'q4h', 'Every Four Hours', 60 * 6, 60 * 10, 60 * (12 + 2), 60 * (12 + 6), 60 * (12 + 10)]
@@ -740,7 +753,7 @@ Template.schedulePicker.onCreated(function () {
   tmpl.autorun(function () {
     var data = Template.currentData();
 
-    tmpl.schedule.set(data.value || scheduleShortcuts[0].options[0].createSchedule());
+    tmpl.schedule.set(data.value || findShortcut('daily').createSchedule());
   });
   tmpl.autorun(function () {
     var schedule = tmpl.schedule.get();
