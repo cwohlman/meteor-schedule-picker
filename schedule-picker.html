@@ -26,19 +26,21 @@
       </div>
     {{/if}}
   </div>
-  <div class="scheduleOptions {{wrapperClass}}">
-    {{#each scheduleOptions}}
-      <div class="{{../inputWrapperClass}}">
-        <select class="{{../inputClass}}" disabled="{{notCustom}}">
-          {{#each options}}
-            <option value="{{value}}" selected="{{selected}}">
-              {{label}}
-            </option>
-          {{/each}}
-        </select>        
-      </div>
-    {{/each}}
-  </div>
+  {{#if custom}}
+    <div class="scheduleOptions {{wrapperClass}}">
+      {{#each scheduleOptions}}
+        <div class="{{../inputWrapperClass}}">
+          <select class="{{../inputClass}}">
+            {{#each options}}
+              <option value="{{value}}" selected="{{selected}}">
+                {{label}}
+              </option>
+            {{/each}}
+          </select>        
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
   <div class="scheduleDates {{wrapperClass}}">
     {{#each scheduleDates}}
       <div class="{{../inputWrapperClass}}">
